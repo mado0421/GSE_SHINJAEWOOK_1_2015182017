@@ -30,12 +30,15 @@ void RenderScene(void)
 	// Renderer Test
 	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
 
-	//for (auto p = ObjList.begin(); p != ObjList.end(); p++)
-	//{
-	//	
-	//	p->
-	//}
-	//g_Renderer->DrawSolidRect
+	for (auto p = ObjList.begin(); p != ObjList.end(); p++)
+	{
+		Position	pos = p->GetPos();
+		Color		color = p->GetColor();
+		float		size = p->GetSize();
+		g_Renderer->DrawSolidRect(
+			pos.x, pos.y, pos.z, size, 
+			color.r, color.g, color.b, color.a);
+	}
 
 	glutSwapBuffers();
 }
@@ -81,7 +84,7 @@ int main(int argc, char **argv)
 
 	// Initialize ObjManager
 	//ObjManager.AddObject(1, 1, 1, 3);
-	ObjList.emplace_back(1, 1, 1, 3);
+	ObjList.emplace_back(50, 1, 1, 30, 1, 0, 0, 1);
 
 	// Initialize Renderer
 	g_Renderer = new Renderer(500, 500);
