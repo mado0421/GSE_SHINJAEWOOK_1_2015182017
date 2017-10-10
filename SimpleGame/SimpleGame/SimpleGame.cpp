@@ -85,6 +85,7 @@ int main(int argc, char **argv)
 	// Initialize ObjManager
 	//ObjManager.AddObject(1, 1, 1, 3);
 	ObjList.emplace_back(50, 1, 1, 30, 1, 0, 0, 1);
+	ObjList.emplace_back(-50, 1, 1, 30);
 
 	// Initialize Renderer
 	g_Renderer = new Renderer(500, 500);

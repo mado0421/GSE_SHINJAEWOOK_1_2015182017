@@ -3,7 +3,7 @@
 class Object;
 
 class ObjectManager {
-	std::vector<Object> ObjList;
+//	std::vector<Object> ObjList;
 
 
 public:
@@ -12,7 +12,7 @@ public:
 
 	void AddObject(float x, float y, float z, float size)
 	{
-		ObjList.emplace_back(x, y, z, size);
+//		ObjList.emplace_back(x, y, z, size);
 	}
 
 	void Render()
