@@ -5,6 +5,13 @@ Object::Object()
 {
 }
 
+void Object::Update()
+{
+//	float time;
+	pos.x += dir.x;
+	pos.y += dir.y;
+}
+
 Position Object::GetPos()
 {
 	return pos;
@@ -13,6 +20,11 @@ Position Object::GetPos()
 Color Object::GetColor()
 {
 	return color;
+}
+
+Vector2f Object::GetDir()
+{
+	return dir;
 }
 
 float Object::GetSize()
@@ -38,6 +50,12 @@ void Object::SetColor(float r, float g, float b, float a)
 void Object::SetSize(float size)
 {
 	this->size = size;
+}
+
+void Object::SetDir(float x, float y)
+{
+	dir.x = x;
+	dir.y = y;
 }
 
 Object::~Object()

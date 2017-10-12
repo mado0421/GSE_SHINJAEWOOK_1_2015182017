@@ -7,17 +7,21 @@
 
 #include <vector>
 
-struct Position {
+#define WWIDTH 500
+#define WHEIGHT 500
+
+struct Vector3f {
 	float x, y, z;
-	Position() {
+	Vector3f() {
 		x = y = z = 0;
 	}
-	Position(float x, float y, float z)
+	Vector3f(float x, float y, float z)
 		: x(x), y(y), z(z)
 	{
 
 	}
 };
+typedef Vector3f Position;
 
 struct Color {
 	float r, g, b, a;
@@ -26,6 +30,18 @@ struct Color {
 	}
 	Color(float r, float g, float b, float a)
 		: r(r), g(g), b(b), a(a)
+	{
+
+	}
+};
+
+struct Vector2f {
+	float x, y;
+	Vector2f() {
+		x = y = 0;
+	}
+	Vector2f(float x, float y)
+		: x(x), y(y)
 	{
 
 	}
