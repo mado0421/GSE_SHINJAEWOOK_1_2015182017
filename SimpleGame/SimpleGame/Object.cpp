@@ -7,7 +7,17 @@ Object::Object()
 
 void Object::Update()
 {
-//	float time;
+	/*
+	float elapsedTime;
+
+	Vector2f spd(dir.x * elapsedTime, dir.y * elapsedTime);
+					or
+	float spdX = dir.x * elapsedTime;
+	float spdY = dir.y * elapsedTime;
+
+	pos.x += spdX;
+	pos.y += spdY;
+	*/
 	pos.x += dir.x;
 	pos.y += dir.y;
 }
