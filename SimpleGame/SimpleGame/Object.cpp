@@ -68,6 +68,12 @@ void Object::SetDir(float x, float y)
 	dir.y = y;
 }
 
+bool Object::isOut()
+{
+	return(pos.x + size < -(WWIDTH / 2.0) || pos.x - size > WWIDTH / 2.0 ||
+			pos.y + size < -(WHEIGHT / 2.0) || pos.y - size > WHEIGHT / 2.0);
+}
+
 Object::~Object()
 {
 }

@@ -48,10 +48,7 @@ public:
 	void		SetSize(float size);
 	void		SetDir(float x, float y);
 
-	bool		isOut() {
-		return(pos.x + size < -(WWIDTH / 2.0) || pos.x - size > WWIDTH/2.0 ||
-				pos.y + size < -(WHEIGHT / 2.0) || pos.y - size > WHEIGHT / 2.0);
-	}
+	bool		isOut();
 
 	~Object();
 };
