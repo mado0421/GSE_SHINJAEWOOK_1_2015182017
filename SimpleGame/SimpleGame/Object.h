@@ -2,12 +2,13 @@
 
 class Object
 {
+private:
 	Position	pos;
 	Vector2f	dir;
 	Color		color;
 	float		size;
 	float		spd;
-
+	bool		collided;
 public:
 	Object();
 	Object(float x, float y, float z, float size)
@@ -33,22 +34,25 @@ public:
 	{
 	}
 
-	void		Update();
+	void		update();
 
-	Position	GetPos();
-	float		GetPosX() { return pos.x; }
-	float		GetPosY() { return pos.y; }
-	float		GetPosZ() { return pos.z; }
-	Color		GetColor();
-	Vector2f	GetDir();
-	float		GetSize();
+	Position	getPos();
+	float		getPosX() { return pos.x; }
+	float		getPosY() { return pos.y; }
+	float		getPosZ() { return pos.z; }
+	Color		getColor();
+	Vector2f	getDir();
+	float		getSize();
+	bool		getCollided() { return collided; }
 
-	void		SetPos(float x, float y, float z);
-	void		SetColor(float r, float g, float b, float a);
-	void		SetSize(float size);
-	void		SetDir(float x, float y);
+	void		setPos(float x, float y, float z);
+	void		setColor(float r, float g, float b, float a);
+	void		setSize(float size);
+	void		setDir(float x, float y);
+	void		setCollided(bool state) { collided = state; }
 
 	bool		isOut();
+	bool		isCollide(const Object &other);
 
 	~Object();
 };

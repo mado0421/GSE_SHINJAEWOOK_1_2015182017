@@ -14,12 +14,12 @@ but WITHOUT ANY WARRANTY.
 #include "Dependencies\freeglut.h"
 
 #include "Renderer.h"
-#include "Object.h"
-#include "ObjectManager.h"
+#include "SceneMgr.h"
 
 
 //ObjectManager ObjManager;
-std::vector<Object> ObjList;
+//std::vector<Object> ObjList;
+SceneMgr sceneMgr;
 Renderer *g_Renderer = NULL;
 bool		mouseLeftDowned;
 
@@ -32,33 +32,15 @@ void RenderScene(void)
 	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
 
 	// ObjList Rendering
-	for (auto p = ObjList.begin(); p != ObjList.end(); p++)
-	{
-		Position	pos = p->GetPos();
-		Color		color = p->GetColor();
-		float		size = p->GetSize();
-		g_Renderer->DrawSolidRect(
-			pos.x, pos.y, pos.z, size, 
-			color.r, color.g, color.b, color.a);
-	}
-
+	sceneMgr.render(g_Renderer);
+	
 	glutSwapBuffers();
 }
 
 void Idle(void)
 {
-	// ObjList Update
-	for (auto p = ObjList.begin(); p != ObjList.end(); p++)
-	{
-		p->Update();
+	sceneMgr.update();
 
-		// 오브젝트가 스크린 밖으로 나갔는지 확인
-		if (p->isOut()) {
-			std::cout << "deleted" << std::endl;
-			p = ObjList.erase(p);
-			if (p == ObjList.end()) break;
-		}
-	}
 	RenderScene();
 }
 
@@ -74,11 +56,16 @@ void MouseInput(int button, int state, int x, int y)
 	}
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
 	{
+		//if (mouseLeftDowned)
+		//{
+		//	//std::cout << "(x, y) is " << x << ", " << y << std::endl;
+		//	std::cout << "created" << std::endl;
+		//	ObjList.emplace_back(x - 250, -y + 250, 1, rand() % 10 + 5);
+		//	mouseLeftDowned = false;
+		//}
 		if (mouseLeftDowned)
 		{
-			//std::cout << "(x, y) is " << x << ", " << y << std::endl;
-			std::cout << "created" << std::endl;
-			ObjList.emplace_back(x - 250, -y + 250, 1, rand() % 10 + 5);
+			// pass
 			mouseLeftDowned = false;
 		}
 	}
@@ -113,9 +100,6 @@ int main(int argc, char **argv)
 	{
 		std::cout << "GLEW 3.0 not supported\n ";
 	}
-
-	//ObjList.emplace_back(50, 1, 1, 30, 1, 0, 0, 1, 0.1, 0.1);
-	//ObjList.emplace_back(-50, 1, 1, 30);
 
 	// Initialize Renderer
 	g_Renderer = new Renderer(500, 500);

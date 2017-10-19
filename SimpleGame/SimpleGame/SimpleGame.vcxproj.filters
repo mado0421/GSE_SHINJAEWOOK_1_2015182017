@@ -19,8 +19,8 @@
     <Filter Include="Object">
       <UniqueIdentifier>{cd074a86-07ea-48bc-9003-f93f703e268a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ObjectManager">
-      <UniqueIdentifier>{1ce8d846-05b5-499a-9b31-6f06e3d77b6e}</UniqueIdentifier>
+    <Filter Include="SceneMgr">
+      <UniqueIdentifier>{3ec0ccac-210e-4184-86fc-8ca670eb99a4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -36,11 +36,11 @@
     <ClInclude Include="Renderer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectManager.h">
-      <Filter>ObjectManager</Filter>
-    </ClInclude>
     <ClInclude Include="Object.h">
       <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneMgr.h">
+      <Filter>SceneMgr</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -53,11 +53,11 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectManager.cpp">
-      <Filter>ObjectManager</Filter>
-    </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneMgr.cpp">
+      <Filter>SceneMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

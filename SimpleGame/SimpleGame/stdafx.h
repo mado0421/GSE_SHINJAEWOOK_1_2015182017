@@ -9,6 +9,7 @@
 
 #define WWIDTH 500
 #define WHEIGHT 500
+#define MAX_OBJECTS_COUNT 150
 
 struct Vector3f {
 	float x, y, z;
