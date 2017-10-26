@@ -2,30 +2,51 @@
 #include "Object.h"
 #include "Renderer.h"
 
+#define MAX_OBJECTS_COUNT 10
+
 class SceneMgr
 {
 private:
 	std::vector<Object> objList;
-//	Object *objList[MAX_OBJECTS_COUNT];
+	Renderer *renderer = NULL;
 
 public:
-	SceneMgr()
-	{
-		for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
-		{
-			objList.emplace_back(
-				rand() % 500 - 250, rand() % 500 - 250, 1, 5.0f,
-				1.0f, 1.0f, 1.0f, 1.0f,
-				(rand() % 5) - 2.5, (rand() % 5) - 2.5);
-		}
+	SceneMgr() {}
+	~SceneMgr() { 
+		objList.clear();
+		delete renderer;
 	}
-	~SceneMgr() { objList.clear(); }
 
-	void update()
+	void initialize()
+	{
+		// Initialize Renderer
+		renderer = new Renderer(WWIDTH, WHEIGHT);
+		if (!renderer->IsInitialized())
+		{
+			std::cout << "Renderer could not be initialized.. \n";
+		}
+
+		//for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
+		//{
+		//	objList.emplace_back(
+		//		rand() % 500 - 250, rand() % 500 - 250, 1, 5.0f,
+		//		1.0f, 1.0f, 1.0f, 1.0f,
+		//		(rand() % 5) - 2.5, (rand() % 5) - 2.5);
+		//}
+	}
+
+	void update(float elapsedTime)
 	{
 		for (auto p = objList.begin(); p != objList.end(); p++)
 		{
-			p->update();
+			p->update(elapsedTime);
+
+			if (p->isLifeTimeEnd() || p->isHpZero())
+			{
+				p = objList.erase(p);
+				if (p == objList.end()) break;
+				continue;
+			}
 
 			// 화면 밖으로 나가면
 			if (p->isOut()) 
@@ -56,11 +77,10 @@ public:
 					p->setCollided(true);
 				}
 			}
-
 		}
 	}
 
-	void render(Renderer* g_Renderer)
+	void render()
 	{
 		for (auto p = objList.begin(); p != objList.end(); p++)
 		{
@@ -73,10 +93,33 @@ public:
 			// size를 2배로 한 이유는 나는 모든 처리를 size를 반지름으로 생각하고 했기 때문.
 			// 교수님께서 만드신 DrawSolidRect()는 size를 지름으로 생각하고 있다.
 			float		size = p->getSize();
-			g_Renderer->DrawSolidRect(
+			renderer->DrawSolidRect(
 				pos.x, pos.y, pos.z, size * 2, 
 				color.r, color.g, color.b, color.a);
 		}
 	}
 	
+	void addObj(int x, int y)
+	{
+		if (objList.size() < MAX_OBJECTS_COUNT)
+		{
+			/*
+				사양서:
+				x, y, z, size,
+				r, g, b, a,
+				dirX, dirY
+			*/
+			objList.emplace_back(
+				x - 250, -y + 250, 1, 15.0f,
+				1.0f, 1.0f, 1.0f, 1.0f,
+				(rand() % 5) - 2.5, (rand() % 5) - 2.5);
+		}
+	}
+
+	void clearObj()
+	{
+		objList.clear();
+	}
+
+
 };

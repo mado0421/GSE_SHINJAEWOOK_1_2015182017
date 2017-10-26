@@ -9,37 +9,36 @@ but WITHOUT ANY WARRANTY.
 */
 
 #include "stdafx.h"
-#include <iostream>
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 
-#include "Renderer.h"
 #include "SceneMgr.h"
 
-
-//ObjectManager ObjManager;
-//std::vector<Object> ObjList;
-SceneMgr sceneMgr;
-Renderer *g_Renderer = NULL;
+SceneMgr	*sceneMgr = NULL;
 bool		mouseLeftDowned;
+float		startTime;
+float		curTime;
 
 void RenderScene(void)
 {
+	startTime = (float)timeGetTime() * 0.001f;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
-	// Renderer Test
-	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-
 	// ObjList Rendering
-	sceneMgr.render(g_Renderer);
+	sceneMgr->render();
 	
+	curTime = (float)timeGetTime() * 0.001f;
+
 	glutSwapBuffers();
 }
 
 void Idle(void)
 {
-	sceneMgr.update();
+	// elapsedTime을 update()로 전달해주자.
+	sceneMgr->update(curTime - startTime);
+
+	std::cout << curTime - startTime << std::endl;
 
 	RenderScene();
 }
@@ -56,18 +55,16 @@ void MouseInput(int button, int state, int x, int y)
 	}
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
 	{
-		//if (mouseLeftDowned)
-		//{
-		//	//std::cout << "(x, y) is " << x << ", " << y << std::endl;
-		//	std::cout << "created" << std::endl;
-		//	ObjList.emplace_back(x - 250, -y + 250, 1, rand() % 10 + 5);
-		//	mouseLeftDowned = false;
-		//}
 		if (mouseLeftDowned)
 		{
-			// pass
+			sceneMgr->addObj(x, y);
 			mouseLeftDowned = false;
 		}
+	}
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
+	{
+		/*for Test*/
+		sceneMgr->clearObj();
 	}
 	RenderScene();
 }
@@ -100,13 +97,9 @@ int main(int argc, char **argv)
 	{
 		std::cout << "GLEW 3.0 not supported\n ";
 	}
-
-	// Initialize Renderer
-	g_Renderer = new Renderer(500, 500);
-	if (!g_Renderer->IsInitialized())
-	{
-		std::cout << "Renderer could not be initialized.. \n";
-	}
+	
+	sceneMgr = new SceneMgr();
+	sceneMgr->initialize();
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
@@ -116,7 +109,7 @@ int main(int argc, char **argv)
 
 	glutMainLoop();
 
-	delete g_Renderer;
+	delete sceneMgr;
 
     return 0;
 }

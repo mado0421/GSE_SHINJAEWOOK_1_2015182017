@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#define LIFETIME 60.0f
+#define HP 1.0f
+#define SPD 20.0f
+
 class Object
 {
 private:
@@ -8,6 +12,8 @@ private:
 	Color		color;
 	float		size;
 	float		spd;
+	float		lifeTime;
+	float			hp;
 	bool		collided;
 public:
 	Object();
@@ -21,6 +27,8 @@ public:
 			(rand() % 255 / 255.0)
 		))
 		, dir(Vector2f((rand() % 5) - 2.5, (rand() % 5) - 2.5))
+		, lifeTime(LIFETIME)
+		, hp(HP)
 	{
 	}
 	Object(
@@ -31,10 +39,12 @@ public:
 		, size(size)
 		, color(Color(r, g, b, a))
 		, dir(Vector2f(dirX, dirY))
+		, lifeTime(LIFETIME)
+		, hp(HP)
 	{
 	}
 
-	void		update();
+	void		update(float elapsedTime);
 
 	Position	getPos();
 	float		getPosX() { return pos.x; }
@@ -53,6 +63,8 @@ public:
 
 	bool		isOut();
 	bool		isCollide(const Object &other);
+	bool		isLifeTimeEnd();
+	bool		isHpZero();
 
 	~Object();
 };

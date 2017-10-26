@@ -5,21 +5,21 @@ Object::Object()
 {
 }
 
-void Object::update()
+void Object::update(float elapsedTime)
 {
-	/*
-	float elapsedTime;
-
-	Vector2f spd(dir.x * elapsedTime, dir.y * elapsedTime);
-					or
-	float spdX = dir.x * elapsedTime;
-	float spdY = dir.y * elapsedTime;
+	float spdX = dir.x * elapsedTime * SPD;
+	float spdY = dir.y * elapsedTime * SPD;
 
 	pos.x += spdX;
 	pos.y += spdY;
-	*/
-	pos.x += dir.x;
-	pos.y += dir.y;
+
+//	std::cout << "(" << (int)pos.x << ", " << (int)pos.y << ")" << std::endl;
+
+	lifeTime -= elapsedTime;
+	if (collided)
+	{
+		hp -= elapsedTime;
+	}
 }
 
 Position Object::getPos()
@@ -70,8 +70,8 @@ void Object::setDir(float x, float y)
 
 bool Object::isOut()
 {
-	return(pos.x + dir.x + size < -(WWIDTH / 2.0) || pos.x + dir.x - size > WWIDTH / 2.0 ||
-			pos.y + dir.y + size < -(WHEIGHT / 2.0) || pos.y + dir.y - size > WHEIGHT / 2.0);
+	return(pos.x + dir.x - size < -(WWIDTH / 2.0) || pos.x + dir.x + size > WWIDTH / 2.0 ||
+			pos.y + dir.y - size < -(WHEIGHT / 2.0) || pos.y + dir.y + size > WHEIGHT / 2.0);
 }
 
 bool Object::isCollide(const Object &other)
@@ -82,6 +82,16 @@ bool Object::isCollide(const Object &other)
 	return ((size + other.size)*(size + other.size) >=
 		(pos.x - other.pos.x)*(pos.x - other.pos.x) +
 		(pos.y - other.pos.y)*(pos.y - other.pos.y));
+}
+
+bool Object::isLifeTimeEnd()
+{
+	return (lifeTime < 0);
+}
+
+bool Object::isHpZero()
+{
+	return (hp < 0);
 }
 
 Object::~Object()
