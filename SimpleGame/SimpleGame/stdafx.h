@@ -48,3 +48,17 @@ struct Vector2f {
 
 	}
 };
+
+namespace Vector {
+	inline float Length(Vector2f vec2f)
+	{
+		return sqrt(vec2f.x*vec2f.x + vec2f.y*vec2f.y);
+	}
+
+	inline Vector2f Normalize(Vector2f vec2f)
+	{
+		float lenght = Length(vec2f);
+		if (lenght == 0) return Vector2f(0.0f, 0.0f);
+		return Vector2f(vec2f.x / lenght, vec2f.y / lenght);
+	}
+}

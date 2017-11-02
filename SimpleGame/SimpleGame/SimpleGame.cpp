@@ -23,7 +23,7 @@ void RenderScene(void)
 {
 	startTime = (float)timeGetTime() * 0.001f;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// ObjList Rendering
 	sceneMgr->render();
@@ -38,7 +38,7 @@ void Idle(void)
 	// elapsedTime을 update()로 전달해주자.
 	sceneMgr->update(curTime - startTime);
 
-	std::cout << curTime - startTime << std::endl;
+//	std::cout << curTime - startTime << std::endl;
 
 	RenderScene();
 }
@@ -57,7 +57,7 @@ void MouseInput(int button, int state, int x, int y)
 	{
 		if (mouseLeftDowned)
 		{
-			sceneMgr->addObj(x, y);
+			sceneMgr->addObj(x, y, OBJECT_CHARACTER);
 			mouseLeftDowned = false;
 		}
 	}
@@ -100,6 +100,7 @@ int main(int argc, char **argv)
 	
 	sceneMgr = new SceneMgr();
 	sceneMgr->initialize();
+	sceneMgr->addObj(250, 250, OBJECT_BUILDING);
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);

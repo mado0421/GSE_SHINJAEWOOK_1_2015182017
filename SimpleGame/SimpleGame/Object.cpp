@@ -7,19 +7,13 @@ Object::Object()
 
 void Object::update(float elapsedTime)
 {
-	float spdX = dir.x * elapsedTime * SPD;
-	float spdY = dir.y * elapsedTime * SPD;
+	float spdX = dir.x * elapsedTime * spd;
+	float spdY = dir.y * elapsedTime * spd;
 
 	pos.x += spdX;
 	pos.y += spdY;
 
-//	std::cout << "(" << (int)pos.x << ", " << (int)pos.y << ")" << std::endl;
-
-	lifeTime -= elapsedTime;
-	if (collided)
-	{
-		hp -= elapsedTime;
-	}
+	flowTime += elapsedTime;
 }
 
 Position Object::getPos()
@@ -86,12 +80,12 @@ bool Object::isCollide(const Object &other)
 
 bool Object::isLifeTimeEnd()
 {
-	return (lifeTime < 0);
+	return (lifeTime <= 0);
 }
 
 bool Object::isHpZero()
 {
-	return (hp < 0);
+	return (hp <= 0);
 }
 
 Object::~Object()
