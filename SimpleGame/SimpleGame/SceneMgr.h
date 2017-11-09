@@ -12,6 +12,9 @@ private:
 	Renderer *renderer = NULL;
 
 	int num_character = 0;
+	int charId = 0;
+
+	GLuint texBuilding;
 public:
 	SceneMgr() {}
 	~SceneMgr() { 
@@ -37,6 +40,9 @@ public:
 		{
 			std::cout << "Renderer could not be initialized.. \n";
 		}
+
+		texBuilding = renderer->CreatePngTexture("assets/image/햄스터.png");
+
 	}
 
 	void update(float elapsedTime)
@@ -84,8 +90,20 @@ public:
 					tmpList.emplace_back(
 						p->getPosX(), p->getPosY(), 1, 1.0f,
 						1.0f, 0.0f, 0.0f, 1.0f,
-						60.0f, 20.0f, 600.0f,
-						(rand() % 5) - 2.5, (rand() % 5) - 2.5, OBJECT_BULLET);
+						3.0f, 20.0f, 600.0f,
+						(rand() % 5) - 2.5, (rand() % 5) - 2.5, OBJECT_BULLET, 0);
+				}
+			}
+			if (type == OBJECT_CHARACTER)
+			{
+				if (p->getFlowTime() > p->getActInterval())
+				{
+					p->setFlowTIme(0.0f);
+					tmpList.emplace_back(
+						p->getPosX(), p->getPosY(), 1, 1.0f,
+						0.0f, 1.0f, 0.0f, 1.0f,
+						5.0f, 10, 100.0f,
+						(rand() % 5) - 2.5, (rand() % 5) - 2.5, OBJECT_ARROW, p->getTeam());
 				}
 			}
 
@@ -102,7 +120,7 @@ public:
 					if (p == p2) continue;
 					if (p->isCollide(*p2))
 					{
-						if (p2->getType() == OBJECT_CHARACTER)
+						if (p2->getType() == OBJECT_CHARACTER || p2->getType() == OBJECT_ARROW)
 						{
 							p->addHp(-1 * p2->getHp());
 							std::cout << "충돌함 - 현재체력: " << p->getHp() << std::endl;
@@ -129,6 +147,26 @@ public:
 						}
 					}
 				}
+				if (type == OBJECT_ARROW)
+				{
+					if (p == p2) continue;
+					if(p->getTeam() != p2->getTeam())
+					{
+						if (p->isCollide(*p2))
+						{
+							if (p2->getType() == OBJECT_CHARACTER)
+							{
+								p2->addHp(-1 * p->getHp());
+								std::cout << "충돌함" << std::endl;
+								/*여기서 p를 erase 해버리면 for문이 두 개라서 터진다
+								완전하게 for문이 끝나버리지 않음
+								그니까 그냥 체력 0으로 만들고 다음 update()에서 없에자.
+								*/
+								p->addHp(-1 * p->getHp());
+							}
+						}
+					}
+				}
 			}
 		}
 		for (auto p = tmpList.begin(); p != tmpList.end(); p++)
@@ -151,7 +189,14 @@ public:
 			// size를 2배로 한 이유는 나는 모든 처리를 size를 반지름으로 생각하고 했기 때문.
 			// 교수님께서 만드신 DrawSolidRect()는 size를 지름으로 생각하고 있다.
 			float		size = p->getSize();
-			renderer->DrawSolidRect(
+			if (p->getType() == OBJECT_BUILDING)
+			{
+				renderer->DrawTexturedRect(pos.x, pos.y, pos.z,
+					size * 2, color.r, color.g, color.b, color.a,
+					texBuilding);
+			}
+			else 
+				renderer->DrawSolidRect(
 				pos.x, pos.y, pos.z, size * 2, 
 				color.r, color.g, color.b, color.a);
 		}
@@ -173,7 +218,7 @@ public:
 				x - 250, -y + 250, 1, 25.0f,
 				1.0f, 1.0f, 0.0f, 1.0f,
 				60.0f, 500.0f, 0.0f,
-				(rand() % 5) - 2.5, (rand() % 5) - 2.5, type);
+				(rand() % 5) - 2.5, (rand() % 5) - 2.5, type, 0);
 			break;
 		case OBJECT_CHARACTER:
 			if (num_character < MAX_OBJECTS_COUNT)
@@ -182,8 +227,9 @@ public:
 					x - 250, -y + 250, 1, 5.0f,
 					1.0f, 1.0f, 1.0f, 1.0f,
 					60.0f, 10.0f, 300.0f,
-					(rand() % 5) - 2.5, (rand() % 5) - 2.5, type);
+					(rand() % 5) - 2.5, (rand() % 5) - 2.5, type, charId);
 				num_character++;
+				charId++;
 			}
 			break;
 		case OBJECT_BULLET:
@@ -191,14 +237,14 @@ public:
 				x - 250, -y + 250, 1, 1.0f,
 				1.0f, 0.0f, 0.0f, 1.0f,
 				60.0f, 20.0f, 600.0f,
-				(rand() % 5) - 2.5, (rand() % 5) - 2.5, type);
+				(rand() % 5) - 2.5, (rand() % 5) - 2.5, type, 0);
 			break;
 		case OBJECT_ARROW:
 			objList.emplace_back(
 				x - 250, -y + 250, 1, 1.0f,
 				1.0f, 0.0f, 0.0f, 1.0f,
 				60.0f, 10.0f, 100.0f,
-				(rand() % 5) - 2.5, (rand() % 5) - 2.5, type);
+				(rand() % 5) - 2.5, (rand() % 5) - 2.5, type, 0);
 			break;
 		default:
 			break;

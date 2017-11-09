@@ -88,6 +88,7 @@ int main(int argc, char **argv)
 	glutInitWindowSize(WWIDTH, WHEIGHT);
 	glutCreateWindow("Game Software Engineering KPU");
 
+
 	glewInit();
 	if (glewIsSupported("GL_VERSION_3_0"))
 	{

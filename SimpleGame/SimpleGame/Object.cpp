@@ -14,6 +14,7 @@ void Object::update(float elapsedTime)
 	pos.y += spdY;
 
 	flowTime += elapsedTime;
+	lifeTime -= elapsedTime;
 }
 
 Position Object::getPos()

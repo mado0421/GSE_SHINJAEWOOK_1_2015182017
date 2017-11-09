@@ -20,6 +20,7 @@ private:
 	float		lifeTime;
 	int			hp;
 	int			type;
+	int			team;
 
 	float		flowTime;
 	float		actInterval;
@@ -44,14 +45,17 @@ public:
 		float x, float y, float z, float size, 
 		float r, float g, float b, float a, 
 		float lifeTime, int hp, float spd,
-		float dirX, float dirY, int type)
+		float dirX, float dirY, int type, int team)
 		: pos(Position(x, y, z)), size(size)
 		, color(Color(r, g, b, a))
 		, lifeTime(lifeTime), hp(hp), spd(spd)
-		, dir(Vector::Normalize(Vector2f(dirX, dirY))), type(type)
+		, dir(Vector::Normalize(Vector2f(dirX, dirY)))
+		, type(type)
+		, team(team)
 	{
 		flowTime = 0.0f;
 		if (type == OBJECT_BUILDING) actInterval = 0.5f;
+		else if (type == OBJECT_CHARACTER) actInterval = 0.5f;
 		else actInterval = 0.0f;
 		collided = false;
 	}
@@ -65,6 +69,7 @@ public:
 		lifeTime	= other.lifeTime;
 		hp			= other.hp;
 		type		= other.type;
+		team		= other.team;
 
 		flowTime	= other.flowTime;
 		actInterval = other.actInterval;
@@ -85,6 +90,7 @@ public:
 	int			getHp() { return hp; }
 	float		getActInterval(){ return actInterval; }
 	float		getFlowTime() { return flowTime; }
+	int			getTeam() { return team; }
 
 	void		setPos(float x, float y, float z);
 	void		setColor(float r, float g, float b, float a);
