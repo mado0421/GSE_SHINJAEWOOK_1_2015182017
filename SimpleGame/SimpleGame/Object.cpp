@@ -17,22 +17,22 @@ void Object::update(float elapsedTime)
 	lifeTime -= elapsedTime;
 }
 
-Position Object::getPos()
+Position Object::getPos()const
 {
 	return pos;
 }
 
-Color Object::getColor()
+Color Object::getColor()const
 {
 	return color;
 }
 
-Vector2f Object::getDir()
+Vector2f Object::getDir()const
 {
 	return dir;
 }
 
-float Object::getSize()
+float Object::getSize()const
 {
 	return size;
 }
@@ -91,4 +91,74 @@ bool Object::isHpZero()
 
 Object::~Object()
 {
+}
+
+Building::Building()
+{
+}
+
+Building::~Building()
+{
+}
+
+void Building::update(float elapsedTime)
+{
+	flowTime += elapsedTime;
+}
+
+Character::Character()
+{
+}
+
+Character::~Character()
+{
+}
+
+void Character::update(float elapsedTime)
+{
+	float spdX = dir.x * elapsedTime * spd;
+	float spdY = dir.y * elapsedTime * spd;
+
+	pos.x += spdX;
+	pos.y += spdY;
+
+	flowTime += elapsedTime;
+}
+
+Bullet::Bullet()
+{
+}
+
+Bullet::~Bullet()
+{
+}
+
+void Bullet::update(float elapsedTime)
+{
+	float spdX = dir.x * elapsedTime * spd;
+	float spdY = dir.y * elapsedTime * spd;
+
+	pos.x += spdX;
+	pos.y += spdY;
+
+	flowTime += elapsedTime;
+}
+
+Arrow::Arrow()
+{
+}
+
+Arrow::~Arrow()
+{
+}
+
+void Arrow::update(float elapsedTime)
+{
+	float spdX = dir.x * elapsedTime * spd;
+	float spdY = dir.y * elapsedTime * spd;
+
+	pos.x += spdX;
+	pos.y += spdY;
+
+	flowTime += elapsedTime;
 }

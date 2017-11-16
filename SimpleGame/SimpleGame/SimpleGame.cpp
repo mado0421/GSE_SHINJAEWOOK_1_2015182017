@@ -57,14 +57,13 @@ void MouseInput(int button, int state, int x, int y)
 	{
 		if (mouseLeftDowned)
 		{
-			sceneMgr->addObj(x, y, OBJECT_CHARACTER);
+			sceneMgr->addObj(x, y, OBJECT_CHARACTER, TEAM_1);
 			mouseLeftDowned = false;
 		}
 	}
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
 	{
 		/*for Test*/
-		sceneMgr->clearObj();
 	}
 	RenderScene();
 }
@@ -101,7 +100,12 @@ int main(int argc, char **argv)
 	
 	sceneMgr = new SceneMgr();
 	sceneMgr->initialize();
-	sceneMgr->addObj(250, 250, OBJECT_BUILDING);
+	sceneMgr->addObj(1 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
+	sceneMgr->addObj(2 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
+	sceneMgr->addObj(3 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
+	sceneMgr->addObj(1 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
+	sceneMgr->addObj(2 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
+	sceneMgr->addObj(3 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);

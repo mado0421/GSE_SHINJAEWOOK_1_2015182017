@@ -10,7 +10,7 @@
 #include <vector>
 
 #define WWIDTH 500
-#define WHEIGHT 500
+#define WHEIGHT 800
 
 struct Vector3f {
 	float x, y, z;
