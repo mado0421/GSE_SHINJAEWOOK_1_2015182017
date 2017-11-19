@@ -19,95 +19,107 @@
 #define HPCHAR 10
 #define SPDCHAR 300.0f
 
-#define SIZBULL 2.0f
+#define SIZBULL 1.0f
 #define HPBULL 20
 #define SPDBULL 600.0f
 
-#define SIZARRO 2.0f
+#define SIZARRO 1.0f
 #define HPARRO 10
 #define SPDARRO 100.0f
 
 class Object
 {
 protected:
-	Position	pos;
-	Vector2f	dir;
-	Color		color;
-	float		size;
-	float		spd;
-	float		lifeTime;
-	int			hp;
-	int			type;
-	int			team;
+	Position	m_pos;
+	Vector2f	m_dir;
+	Color		m_col;
+	float		m_size;
+	float		m_spd;
+	float		m_tLife;
+	float		m_tFlow;
+	float		m_tInterval;
+	int			m_hp;
+	int			m_team;
+	bool		m_collide;
 
-	float		flowTime;
-	float		actInterval;
-	bool		collided;
 public:
 	Object();
 	Object(
-		float x, float y, float z, float size, 
-		float r, float g, float b, float a, 
+		float x, float y, float z, float size,
+		float r, float g, float b, float a,
 		float lifeTime, int hp, float spd,
-		float dirX, float dirY, int type, int team)
-		: pos(Position(x, y, z)), size(size)
-		, color(Color(r, g, b, a))
-		, lifeTime(lifeTime), hp(hp), spd(spd)
-		, dir(Vector::Normalize(Vector2f(dirX, dirY)))
-		, type(type)
-		, team(team)
+		float dirX, float dirY, int team)
+		: m_pos(Position(x, y, z)), m_size(size)
+		, m_col(Color(r, g, b, a))
+		, m_tLife(lifeTime), m_hp(hp), m_spd(spd)
+		, m_dir(Vector::Normalize(Vector2f(dirX, dirY)))
+		, m_team(team)
 	{
-		flowTime = 0.0f;
-		actInterval = 0.0f;
-		collided = false;
+		m_tFlow = 0.0f;
+		m_tInterval = 0.0f;
+		m_collide = false;
 	}
 	Object(const Object& other)
 	{
-		pos			= other.pos;
-		dir			= other.dir;
-		color		= other.color;
-		size		= other.size;
-		spd			= other.spd;
-		lifeTime	= other.lifeTime;
-		hp			= other.hp;
-		type		= other.type;
-		team		= other.team;
-
-		flowTime	= other.flowTime;
-		actInterval = other.actInterval;
-		collided	= other.collided;
+		m_pos			=other.m_pos;
+		m_dir			=other.m_dir;
+		m_col			=other.m_col;
+		m_size			=other.m_size;
+		m_spd			=other.m_spd;
+		m_tLife			=other.m_tLife;
+		m_tFlow			=other.m_tFlow;
+		m_tInterval		=other.m_tInterval;
+		m_hp			=other.m_hp;
+		m_team			=other.m_team;
+		m_collide		=other.m_collide;
 	}
+
 
 	virtual void	update(float elapsedTime);
 
-	virtual Position	getPos() const;
-	virtual float		getPosX() const{ return pos.x; }
-	virtual float		getPosY() const{ return pos.y; }
-	virtual float		getPosZ() const{ return pos.z; }
-	virtual Color		getColor()const;
-	virtual Vector2f	getDir()const;
-	virtual float		getSize()const;
-	virtual bool		getCollided() const { return collided; }
-	virtual int			getType()const { return type; }
-	virtual int			getHp() const { return hp; }
-	virtual float		getActInterval()const { return actInterval; }
-	virtual float		getFlowTime()const { return flowTime; }
-	virtual int			getTeam() const { return team; }
+	virtual Position	getPos() const			{ return m_pos;}
+	virtual float		getPosX() const			{ return m_pos.x; }
+	virtual float		getPosY() const			{ return m_pos.y; }
+	virtual float		getPosZ() const			{ return m_pos.z; }
+	virtual Color		getColor()const			{ return m_col;}
+	virtual Vector2f	getDir()const			{ return m_dir;}
+	virtual float		getSize()const			{ return m_size;}
+	virtual bool		getCollided() const		{ return m_collide; }
+	virtual int			getHp() const			{ return m_hp; }
+	virtual float		getActInterval()const	{ return m_tInterval; }
+	virtual float		getFlowTime()const		{ return m_tFlow; }
+	virtual int			getTeam() const			{ return m_team; }
 
 	virtual void		setPos(float x, float y, float z);
 	virtual void		setColor(float r, float g, float b, float a);
 	virtual void		setSize(float size);
 	virtual void		setDir(float x, float y);
-	virtual void		setCollided(bool state) { collided = state; }
-	virtual void		setFlowTIme(float val) { flowTime = val; }
+	virtual void		setCollided(bool state) { m_collide = state; }
+	virtual void		setFlowTIme(float val) { m_tFlow = val; }
 
-	virtual void		setHp(int hp) { this->hp = hp; }
-	virtual void		addHp(int val) { hp += val; }
-	
-	virtual bool		isOut();
-	virtual bool		isCollide(const Object &other);
-	virtual bool		isLifeTimeEnd();
-	virtual bool		isHpZero();
+	virtual void		setHp(int hp) { this->m_hp = hp; }
+	virtual void		addHp(int val) { m_hp += val; }
+
+	bool isOut() const
+	{
+		return (m_pos.x + m_dir.x - m_size < -(WWIDTH / 2.0) || m_pos.x + m_dir.x + m_size > WWIDTH / 2.0 ||
+			m_pos.y + m_dir.y - m_size < -(WHEIGHT / 2.0) || m_pos.y + m_dir.y + m_size > WHEIGHT / 2.0);
+	};
+	bool isCollide(const Object &other) const
+	{
+		return ((m_size + other.m_size)*(m_size + other.m_size) >=
+			(m_pos.x - other.m_pos.x)*(m_pos.x - other.m_pos.x) +
+			(m_pos.y - other.m_pos.y)*(m_pos.y - other.m_pos.y));
+	};
+	bool isLifeTimeEnd() const { return m_tLife <= 0; };
+	bool isHpZero() const { return m_hp <= 0; };
+
+	const bool isDead() const
+	{
+		if (isLifeTimeEnd()) return true;
+		if (isHpZero()) return true;
+		return false;
+	}
 
 	~Object();
 };
@@ -120,9 +132,9 @@ public:
 		float x, float y, int team)
 		:Object(x, y, 0, SIZBUIL,
 			0, 0, 0, 1, 0, HPBUIL,
-			0, 0, 0, OBJECT_BUILDING, team)
+			0, 0, 0, team)
 	{
-		actInterval = 10.0f;
+		m_tInterval = 10.0f;
 	}
 	~Building();
 public:
@@ -137,11 +149,11 @@ public:
 		float dirX, float dirY)
 		:Object(x, y, 0, SIZCHAR,
 			0, 0, 0, 1, 0, HPCHAR,
-			SPDCHAR, dirX, dirY, OBJECT_CHARACTER, team)
+			SPDCHAR, dirX, dirY, team)
 	{
-		actInterval = 3.0f;
-		if (team == TEAM_1) color = Color(1.0f, 0.0f, 0.0f, 1.0f);
-		if (team == TEAM_2) color = Color(0.0f, 0.0f, 1.0f, 1.0f);
+		m_tInterval = 3.0f;
+		if (team == TEAM_1) m_col = Color(1.0f, 0.0f, 0.0f, 1.0f);
+		if (team == TEAM_2) m_col = Color(0.0f, 0.0f, 1.0f, 1.0f);
 	}
 	~Character();
 public:
@@ -157,10 +169,10 @@ public:
 		float dirX, float dirY)
 		:Object(x, y, 0, SIZBULL,
 			0, 0, 0, 1, 0, HPBULL,
-			SPDBULL, dirX, dirY, OBJECT_BULLET, team)
+			SPDBULL, dirX, dirY, team)
 	{
-		if (team == TEAM_1) color = Color(1.0f, 0.0f, 0.0f, 1.0f);
-		if (team == TEAM_2) color = Color(0.0f, 0.0f, 1.0f, 1.0f);
+		if (team == TEAM_1) m_col = Color(1.0f, 0.0f, 0.0f, 1.0f);
+		if (team == TEAM_2) m_col = Color(0.0f, 0.0f, 1.0f, 1.0f);
 	}
 	~Bullet();
 public:
@@ -176,10 +188,10 @@ public:
 		float dirX, float dirY)
 		:Object(x, y, 0, SIZARRO,
 			0, 0, 0, 1, 0, HPARRO,
-			SPDARRO, dirX, dirY, OBJECT_ARROW, team)
+			SPDARRO, dirX, dirY, team)
 	{
-		if (team == TEAM_1) color = Color(0.5f, 0.2f, 0.7f, 1.0f);
-		if (team == TEAM_2) color = Color(1.0f, 1.0f, 0.0f, 1.0f);
+		if (team == TEAM_1) m_col = Color(0.5f, 0.2f, 0.7f, 1.0f);
+		if (team == TEAM_2) m_col = Color(1.0f, 1.0f, 0.0f, 1.0f);
 	}
 	~Arrow();
 public:

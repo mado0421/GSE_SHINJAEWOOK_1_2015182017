@@ -16,30 +16,37 @@ but WITHOUT ANY WARRANTY.
 
 SceneMgr	*sceneMgr = NULL;
 bool		mouseLeftDowned;
-float		startTime;
-float		curTime;
+DWORD		prevTime;
+DWORD		curTime;
+float		elapsedTime;
 
 void RenderScene(void)
 {
-	startTime = (float)timeGetTime() * 0.001f;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+
 	// ObjList Rendering
 	sceneMgr->render();
-	
-	curTime = (float)timeGetTime() * 0.001f;
+
+	curTime = timeGetTime();
+
+	elapsedTime = (curTime - prevTime)*0.001;
+	if (elapsedTime > (1.0 / 60))
+	{
+		// elapsedTime을 update()로 전달해주자.
+		sceneMgr->update(elapsedTime);
+
+//		std::cout << elapsedTime << std::endl;
+
+		prevTime = timeGetTime();
+	}
 
 	glutSwapBuffers();
 }
 
 void Idle(void)
 {
-	// elapsedTime을 update()로 전달해주자.
-	sceneMgr->update(curTime - startTime);
-
-//	std::cout << curTime - startTime << std::endl;
-
 	RenderScene();
 }
 
@@ -57,7 +64,7 @@ void MouseInput(int button, int state, int x, int y)
 	{
 		if (mouseLeftDowned)
 		{
-			sceneMgr->addObj(x, y, OBJECT_CHARACTER, TEAM_1);
+			sceneMgr->addObj(x, y, OBJECT_CHARACTER, TEAM_2);
 			mouseLeftDowned = false;
 		}
 	}
@@ -87,6 +94,7 @@ int main(int argc, char **argv)
 	glutInitWindowSize(WWIDTH, WHEIGHT);
 	glutCreateWindow("Game Software Engineering KPU");
 
+	prevTime = timeGetTime();
 
 	glewInit();
 	if (glewIsSupported("GL_VERSION_3_0"))
@@ -100,12 +108,6 @@ int main(int argc, char **argv)
 	
 	sceneMgr = new SceneMgr();
 	sceneMgr->initialize();
-	sceneMgr->addObj(1 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
-	sceneMgr->addObj(2 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
-	sceneMgr->addObj(3 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
-	sceneMgr->addObj(1 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
-	sceneMgr->addObj(2 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
-	sceneMgr->addObj(3 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);

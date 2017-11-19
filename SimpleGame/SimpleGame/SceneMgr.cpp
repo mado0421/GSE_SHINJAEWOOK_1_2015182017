@@ -10,12 +10,31 @@ void SceneMgr::initialize()
 		std::cout << "Renderer could not be initialized.. \n";
 	}
 
+	m_tFlow[NorthAutoCreate] = NorthAutoCreateTime;
+	m_tFlow[SouthCreateCooldown] = SouthCreateCooldownTime;
+
 	texBuilding[TEAM_1] = renderer->CreatePngTexture("assets/image/햄스터1.png");
 	texBuilding[TEAM_2] = renderer->CreatePngTexture("assets/image/햄스터2.png");
+
+	addObj(1 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
+	addObj(2 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
+	addObj(3 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
+	addObj(1 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
+	addObj(2 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
+	addObj(3 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
 }
 
 void SceneMgr::update(float elapsedTime)
 {
+	for (int i = 0; i < NUMOFTIMER; ++i) m_tFlow[i] += elapsedTime;
+
+	if (m_tFlow[Timer::NorthAutoCreate] >= Timer::NorthAutoCreateTime)
+	{
+		m_tFlow[Timer::NorthAutoCreate] = 0;
+		addObj(1 * (WWIDTH / 4.0), rand() % (WHEIGHT / 2), OBJECT_CHARACTER, TEAM_1);
+
+	}
+
 	for (auto p = buildList.begin(); p != buildList.end(); ++p)
 	{
 		p->update(elapsedTime);
@@ -37,7 +56,7 @@ void SceneMgr::update(float elapsedTime)
 	for (auto p = charList.begin(); p != charList.end(); ++p)
 	{
 		p->update(elapsedTime);
-		// 화면 밖으로 나가면
+		 //화면 밖으로 나가면
 		if (p->isOut())
 		{
 			//충돌한 방향에 따라 벡터를 달리 바꿔야 함.
@@ -66,7 +85,25 @@ void SceneMgr::update(float elapsedTime)
 				rand() % 100 / 50.0 - 1.0, rand() % 100 / 50.0 - 1.0
 			);
 		}
+
+		int team = p->getTeam();
+
+		for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
+		{
+			if (team != bp->getTeam())
+			{
+				if (p->isCollide(*bp))
+				{
+					bp->addHp(-1 * p->getHp());
+					std::cout << bp->getTeam() << "팀의 건물이 " << p->getHp()
+						<< "데미지를 입었습니다." << std::endl;
+					p = charList.erase(p);
+					if (p == charList.end()) goto CHARRETURN;
+				}
+			}
+		}
 	}
+CHARRETURN:
 	for (auto p = bulletList.begin(); p != bulletList.end(); ++p)
 	{
 		p->update(elapsedTime);
@@ -93,20 +130,20 @@ void SceneMgr::update(float elapsedTime)
 
 		int team = p->getTeam();
 
-		for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
-		{
-			if (team != bp->getTeam())
-			{
-				if (p->isCollide(*bp))
-				{
-					bp->addHp(-1 * p->getHp());
-					std::cout << bp->getTeam() << "팀의 건물이 " << p->getHp()
-						<< "데미지를 입었습니다." << std::endl;
-					p = bulletList.erase(p);
-					if (p == bulletList.end()) goto BULLETRETURN;
-				}
-			}
-		}
+		//for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
+		//{
+		//	if (team != bp->getTeam())
+		//	{
+		//		if (p->isCollide(*bp))
+		//		{
+		//			bp->addHp(-1 * p->getHp());
+		//			std::cout << bp->getTeam() << "팀의 건물이 " << p->getHp()
+		//				<< "데미지를 입었습니다." << std::endl;
+		//			p = bulletList.erase(p);
+		//			if (p == bulletList.end()) goto BULLETRETURN;
+		//		}
+		//	}
+		//}
 		for (auto cp = charList.begin(); cp != charList.end(); ++cp)
 		{
 			if (team != cp->getTeam())
@@ -185,10 +222,13 @@ ARROWRETURN:
 
 void SceneMgr::render()
 {
+	Position	pos;
+	float		size;
+	Color		color;
 	for (auto p = buildList.cbegin(); p != buildList.cend(); ++p)
 	{
-		Position	pos = p->getPos();
-		float		size = p->getSize();
+		pos = p->getPos();
+		size = p->getSize();
 
 		renderer->DrawTexturedRect(pos.x, pos.y, pos.z,
 			size * 2, 1.0f, 1.0f, 1.0f, 1.0f,
@@ -196,9 +236,9 @@ void SceneMgr::render()
 	}
 	for (auto p = charList.cbegin(); p != charList.cend(); ++p)
 	{
-		Position	pos = p->getPos();
-		float		size = p->getSize();
-		Color		color = p->getColor();
+		pos = p->getPos();
+		size = p->getSize();
+		color = p->getColor();
 
 		renderer->DrawSolidRect(
 			pos.x, pos.y, pos.z, size * 2,
@@ -206,9 +246,9 @@ void SceneMgr::render()
 	}
 	for (auto p = bulletList.cbegin(); p != bulletList.cend(); ++p)
 	{
-		Position	pos = p->getPos();
-		float		size = p->getSize();
-		Color		color = p->getColor();
+		pos = p->getPos();
+		size = p->getSize();
+		color = p->getColor();
 
 		renderer->DrawSolidRect(
 			pos.x, pos.y, pos.z, size * 2,
@@ -216,9 +256,9 @@ void SceneMgr::render()
 	}
 	for (auto p = arrowList.cbegin(); p != arrowList.cend(); ++p)
 	{
-		Position	pos = p->getPos();
-		float		size = p->getSize();
-		Color		color = p->getColor();
+		pos = p->getPos();
+		size = p->getSize();
+		color = p->getColor();
 
 		renderer->DrawSolidRect(
 			pos.x, pos.y, pos.z, size * 2,
@@ -235,10 +275,24 @@ void SceneMgr::addObj(int x, int y, int type, int team)
 			x - WWIDTH / 2.0, -y + WHEIGHT / 2.0, team);
 		break;
 	case OBJECT_CHARACTER:
-		charList.emplace_back(
-			x - WWIDTH / 2.0, -y + WHEIGHT / 2.0, team,
-			rand() % 100 / 50.0 - 1.0, rand() % 100 / 50.0 - 1.0
-		);
+		if (team == TEAM_2)
+		{
+			if (y >= 400.0 && m_tFlow[Timer::SouthCreateCooldown] >= Timer::SouthCreateCooldownTime)
+			{
+				m_tFlow[Timer::SouthCreateCooldown] = 0;
+				charList.emplace_back(
+					x - WWIDTH / 2.0, -y + WHEIGHT / 2.0, team,
+					rand() % 100 / 50.0 - 1.0, rand() % 100 / 50.0 - 1.0
+				);
+			}
+		}
+		else
+		{
+			charList.emplace_back(
+				x - WWIDTH / 2.0, -y + WHEIGHT / 2.0, team,
+				rand() % 100 / 50.0 - 1.0, rand() % 100 / 50.0 - 1.0
+			);
+		}
 		break;
 	case OBJECT_BULLET:
 		bulletList.emplace_back(

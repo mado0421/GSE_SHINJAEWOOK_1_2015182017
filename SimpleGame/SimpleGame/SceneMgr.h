@@ -4,6 +4,16 @@
 
 #define MAX_TEAM 2
 
+#define NUMOFTIMER 2
+
+enum Timer {
+	NorthAutoCreate = 0,
+	SouthCreateCooldown = 1,
+
+	NorthAutoCreateTime = 5,
+	SouthCreateCooldownTime = 7
+};
+
 class SceneMgr
 {
 private:
@@ -15,6 +25,8 @@ private:
 	Renderer *renderer = NULL;
 
 	GLuint texBuilding[MAX_TEAM];
+
+	float		m_tFlow[NUMOFTIMER];
 public:
 	SceneMgr() {}
 	~SceneMgr() { 
