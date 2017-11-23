@@ -119,6 +119,20 @@ CHARRETURN:
 		}
 
 		int team = p->getTeam();
+		for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
+		{
+			if (team != bp->getTeam())
+			{
+				if (p->isCollide(*bp))
+				{
+					bp->addHp(-1 * p->getHp());
+					std::cout << bp->getTeam() << "팀의 건물이 " << p->getHp()
+						<< "데미지를 입었습니다." << std::endl;
+					p = bulletList.erase(p);
+					if (p == bulletList.end()) goto BULLETRETURN;
+				}
+			}
+		}
 		for (auto cp = charList.begin(); cp != charList.end(); ++cp)
 		{
 			if (team != cp->getTeam())
