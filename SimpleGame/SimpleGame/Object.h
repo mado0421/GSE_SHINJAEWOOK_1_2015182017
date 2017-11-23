@@ -15,15 +15,15 @@
 #define SIZBUIL 50.0f
 #define HPBUIL 500
 
-#define SIZCHAR 5.0f
-#define HPCHAR 10
+#define SIZCHAR 15.0f
+#define HPCHAR 100
 #define SPDCHAR 300.0f
 
-#define SIZBULL 1.0f
-#define HPBULL 20
+#define SIZBULL 2.0f
+#define HPBULL 15
 #define SPDBULL 600.0f
 
-#define SIZARRO 1.0f
+#define SIZARRO 2.0f
 #define HPARRO 10
 #define SPDARRO 100.0f
 
@@ -102,8 +102,8 @@ public:
 
 	bool isOut() const
 	{
-		return (m_pos.x + m_dir.x - m_size < -(WWIDTH / 2.0) || m_pos.x + m_dir.x + m_size > WWIDTH / 2.0 ||
-			m_pos.y + m_dir.y - m_size < -(WHEIGHT / 2.0) || m_pos.y + m_dir.y + m_size > WHEIGHT / 2.0);
+		return (m_pos.x + (m_dir.x * m_spd) - m_size * 2 <= -(WWIDTH / 2.0) || m_pos.x + (m_dir.x * m_spd) + m_size * 2 >= WWIDTH / 2.0 ||
+			m_pos.y + (m_dir.y * m_spd) - m_size * 2 <= -(WHEIGHT / 2.0) || m_pos.y + (m_dir.y * m_spd) + m_size * 2 >= WHEIGHT / 2.0);
 	};
 	bool isCollide(const Object &other) const
 	{

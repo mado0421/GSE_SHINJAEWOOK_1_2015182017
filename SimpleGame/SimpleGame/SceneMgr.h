@@ -5,6 +5,7 @@
 #define MAX_TEAM 2
 
 #define NUMOFTIMER 2
+#define HPBARHEIGHT 5.0f
 
 enum Timer {
 	NorthAutoCreate = 0,
@@ -25,7 +26,11 @@ private:
 	Renderer *renderer = NULL;
 
 	GLuint texBuilding[MAX_TEAM];
-
+	Color teamColor[2] =
+	{
+		{ 1.0f, 0.0f, 0.0f, 1.0f },
+		{ 0.0f, 0.0f, 1.0f, 1.0f }
+	};
 	float		m_tFlow[NUMOFTIMER];
 public:
 	SceneMgr() {}

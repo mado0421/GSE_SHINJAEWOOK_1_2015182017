@@ -56,7 +56,7 @@ void SceneMgr::update(float elapsedTime)
 	for (auto p = charList.begin(); p != charList.end(); ++p)
 	{
 		p->update(elapsedTime);
-		 //화면 밖으로 나가면
+		//화면 밖으로 나가면
 		if (p->isOut())
 		{
 			//충돌한 방향에 따라 벡터를 달리 바꿔야 함.
@@ -107,21 +107,7 @@ CHARRETURN:
 	for (auto p = bulletList.begin(); p != bulletList.end(); ++p)
 	{
 		p->update(elapsedTime);
-		if (p->isOut())
-		{
-			//충돌한 방향에 따라 벡터를 달리 바꿔야 함.
-			Position pos = p->getPos();
-			Vector2f dir = p->getDir();
-			float size = p->getSize();
-			if (pos.x + dir.x + size < -(WWIDTH / 2.0) ||
-				pos.x + dir.x - size > WWIDTH / 2.0)
-				dir.x *= -1;
-			if (pos.y + dir.y + size < -(WHEIGHT / 2.0) ||
-				pos.y + dir.y - size > WHEIGHT / 2.0)
-				dir.y *= -1;
-			p->setDir(dir.x, dir.y);
-		}
-		if (p->isHpZero())
+		if (p->isHpZero() || p->isOut())
 		{
 			p = bulletList.erase(p);
 			if (p == bulletList.end()) break;
@@ -129,21 +115,6 @@ CHARRETURN:
 		}
 
 		int team = p->getTeam();
-
-		//for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
-		//{
-		//	if (team != bp->getTeam())
-		//	{
-		//		if (p->isCollide(*bp))
-		//		{
-		//			bp->addHp(-1 * p->getHp());
-		//			std::cout << bp->getTeam() << "팀의 건물이 " << p->getHp()
-		//				<< "데미지를 입었습니다." << std::endl;
-		//			p = bulletList.erase(p);
-		//			if (p == bulletList.end()) goto BULLETRETURN;
-		//		}
-		//	}
-		//}
 		for (auto cp = charList.begin(); cp != charList.end(); ++cp)
 		{
 			if (team != cp->getTeam())
@@ -163,21 +134,7 @@ BULLETRETURN:
 	for (auto p = arrowList.begin(); p != arrowList.end(); ++p)
 	{
 		p->update(elapsedTime);
-		if (p->isOut())
-		{
-			//충돌한 방향에 따라 벡터를 달리 바꿔야 함.
-			Position pos = p->getPos();
-			Vector2f dir = p->getDir();
-			float size = p->getSize();
-			if (pos.x + dir.x + size < -(WWIDTH / 2.0) ||
-				pos.x + dir.x - size > WWIDTH / 2.0)
-				dir.x *= -1;
-			if (pos.y + dir.y + size < -(WHEIGHT / 2.0) ||
-				pos.y + dir.y - size > WHEIGHT / 2.0)
-				dir.y *= -1;
-			p->setDir(dir.x, dir.y);
-		}
-		if (p->isHpZero())
+		if (p->isHpZero()|| p->isOut())
 		{
 			p = arrowList.erase(p);
 			if (p == arrowList.end()) break;
@@ -229,10 +186,18 @@ void SceneMgr::render()
 	{
 		pos = p->getPos();
 		size = p->getSize();
-
+		
 		renderer->DrawTexturedRect(pos.x, pos.y, pos.z,
 			size * 2, 1.0f, 1.0f, 1.0f, 1.0f,
-			texBuilding[p->getTeam()]);
+			texBuilding[p->getTeam()], LEV_BUILD);
+		renderer->DrawSolidRectGauge(pos.x, pos.y + SIZBUIL + HPBARHEIGHT, pos.z,
+			SIZBUIL*2, HPBARHEIGHT,
+			teamColor[p->getTeam()].r,
+			teamColor[p->getTeam()].g, 
+			teamColor[p->getTeam()].b, 
+			teamColor[p->getTeam()].a,
+			((float)p->getHp()/HPBUIL), 0);
+
 	}
 	for (auto p = charList.cbegin(); p != charList.cend(); ++p)
 	{
@@ -242,7 +207,14 @@ void SceneMgr::render()
 
 		renderer->DrawSolidRect(
 			pos.x, pos.y, pos.z, size * 2,
-			color.r, color.g, color.b, color.a);
+			color.r, color.g, color.b, color.a, LEV_CHARA);
+		renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
+			SIZCHAR * 2, HPBARHEIGHT,
+			teamColor[p->getTeam()].r,
+			teamColor[p->getTeam()].g,
+			teamColor[p->getTeam()].b,
+			teamColor[p->getTeam()].a,
+			((float)p->getHp() / HPCHAR), 0);
 	}
 	for (auto p = bulletList.cbegin(); p != bulletList.cend(); ++p)
 	{
@@ -252,7 +224,7 @@ void SceneMgr::render()
 
 		renderer->DrawSolidRect(
 			pos.x, pos.y, pos.z, size * 2,
-			color.r, color.g, color.b, color.a);
+			color.r, color.g, color.b, color.a, LEV_BULLE);
 	}
 	for (auto p = arrowList.cbegin(); p != arrowList.cend(); ++p)
 	{
@@ -262,7 +234,7 @@ void SceneMgr::render()
 
 		renderer->DrawSolidRect(
 			pos.x, pos.y, pos.z, size * 2,
-			color.r, color.g, color.b, color.a);
+			color.r, color.g, color.b, color.a, LEV_ARROW);
 	}
 }
 
