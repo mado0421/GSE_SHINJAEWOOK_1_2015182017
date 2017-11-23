@@ -15,6 +15,10 @@ void SceneMgr::initialize()
 
 	texBuilding[TEAM_1] = renderer->CreatePngTexture("assets/image/ÇÜ½ºÅÍ1.png");
 	texBuilding[TEAM_2] = renderer->CreatePngTexture("assets/image/ÇÜ½ºÅÍ2.png");
+	texture[0] = renderer->CreatePngTexture("assets/image/ÇÜ½ºÅÍ1.png");
+	texture[1] = renderer->CreatePngTexture("assets/image/ÇÜ½ºÅÍ2.png");
+	texture[2] = renderer->CreatePngTexture("assets/image/ÇØ¹Ù¶ó±â¾¾.png");
+
 
 	addObj(1 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
 	addObj(2 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
@@ -186,7 +190,6 @@ void SceneMgr::render()
 	{
 		pos = p->getPos();
 		size = p->getSize();
-		
 		renderer->DrawTexturedRect(pos.x, pos.y, pos.z,
 			size * 2, 1.0f, 1.0f, 1.0f, 1.0f,
 			texBuilding[p->getTeam()], LEV_BUILD);
@@ -205,9 +208,12 @@ void SceneMgr::render()
 		size = p->getSize();
 		color = p->getColor();
 
-		renderer->DrawSolidRect(
-			pos.x, pos.y, pos.z, size * 2,
-			color.r, color.g, color.b, color.a, LEV_CHARA);
+		//renderer->DrawSolidRect(
+		//	pos.x, pos.y, pos.z, size * 2,
+		//	color.r, color.g, color.b, color.a, LEV_CHARA);
+		renderer->DrawTexturedRect(pos.x, pos.y, pos.z,
+			size * 2, 1.0f, 1.0f, 1.0f, 1.0f,
+			texture[2], LEV_CHARA);
 		renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
 			SIZCHAR * 2, HPBARHEIGHT,
 			teamColor[p->getTeam()].r,

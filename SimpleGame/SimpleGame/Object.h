@@ -102,8 +102,8 @@ public:
 
 	bool isOut() const
 	{
-		return (m_pos.x + (m_dir.x * m_spd) - m_size * 2 <= -(WWIDTH / 2.0) || m_pos.x + (m_dir.x * m_spd) + m_size * 2 >= WWIDTH / 2.0 ||
-			m_pos.y + (m_dir.y * m_spd) - m_size * 2 <= -(WHEIGHT / 2.0) || m_pos.y + (m_dir.y * m_spd) + m_size * 2 >= WHEIGHT / 2.0);
+		return (m_pos.x + m_dir.x - m_size * 2 <= -(WWIDTH / 2.0) || m_pos.x + m_dir.x + m_size * 2 >= WWIDTH / 2.0 ||
+			m_pos.y + m_dir.y - m_size * 2 <= -(WHEIGHT / 2.0) || m_pos.y + m_dir.y + m_size * 2 >= WHEIGHT / 2.0);
 	};
 	bool isCollide(const Object &other) const
 	{
@@ -134,7 +134,7 @@ public:
 			0, 0, 0, 1, 0, HPBUIL,
 			0, 0, 0, team)
 	{
-		m_tInterval = 10.0f;
+		m_tInterval = 1.0f;
 	}
 	~Building();
 public:
@@ -151,7 +151,7 @@ public:
 			0, 0, 0, 1, 0, HPCHAR,
 			SPDCHAR, dirX, dirY, team)
 	{
-		m_tInterval = 3.0f;
+		m_tInterval = 0.2f;
 		if (team == TEAM_1) m_col = Color(1.0f, 0.0f, 0.0f, 1.0f);
 		if (team == TEAM_2) m_col = Color(0.0f, 0.0f, 1.0f, 1.0f);
 	}

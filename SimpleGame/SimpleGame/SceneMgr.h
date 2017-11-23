@@ -12,7 +12,7 @@ enum Timer {
 	SouthCreateCooldown = 1,
 
 	NorthAutoCreateTime = 5,
-	SouthCreateCooldownTime = 7
+	SouthCreateCooldownTime = 3
 };
 
 class SceneMgr
@@ -26,6 +26,7 @@ private:
 	Renderer *renderer = NULL;
 
 	GLuint texBuilding[MAX_TEAM];
+	GLuint texture[3];
 	Color teamColor[2] =
 	{
 		{ 1.0f, 0.0f, 0.0f, 1.0f },
