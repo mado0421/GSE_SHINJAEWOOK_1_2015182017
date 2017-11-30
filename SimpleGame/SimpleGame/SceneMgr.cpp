@@ -18,7 +18,13 @@ void SceneMgr::initialize()
 	texture[0] = renderer->CreatePngTexture("assets/image/햄스터1.png");
 	texture[1] = renderer->CreatePngTexture("assets/image/햄스터2.png");
 	texture[2] = renderer->CreatePngTexture("assets/image/해바라기씨.png");
+	backTexture[0] = renderer->CreatePngTexture("assets/image/배경텍스처.png");
+	particleTexture[0] = renderer->CreatePngTexture("assets/image/파티클텍스처.png");
 
+	/*24*29*/
+	characterTexture[0] = renderer->CreatePngTexture("assets/image/Char_runnig-Sheet.png");
+
+	animationFrame = 0;
 
 	addObj(1 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
 	addObj(2 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
@@ -30,6 +36,9 @@ void SceneMgr::initialize()
 
 void SceneMgr::update(float elapsedTime)
 {
+	if (animationFrame >= 16) animationFrame = 0;
+	else animationFrame += 1;
+
 	for (int i = 0; i < NUMOFTIMER; ++i) m_tFlow[i] += elapsedTime;
 
 	if (m_tFlow[Timer::NorthAutoCreate] >= Timer::NorthAutoCreateTime)
@@ -200,6 +209,12 @@ void SceneMgr::render()
 	Position	pos;
 	float		size;
 	Color		color;
+	Vector2f	dir;
+
+	renderer->DrawTexturedRect(0, 0, 0,
+		WHEIGHT, 1.0f, 1.0f, 1.0f, 1.0f,
+		backTexture[0], LEV_BACK);
+
 	for (auto p = buildList.cbegin(); p != buildList.cend(); ++p)
 	{
 		pos = p->getPos();
@@ -221,13 +236,18 @@ void SceneMgr::render()
 		pos = p->getPos();
 		size = p->getSize();
 		color = p->getColor();
+		dir = p->getDir();
 
 		//renderer->DrawSolidRect(
 		//	pos.x, pos.y, pos.z, size * 2,
 		//	color.r, color.g, color.b, color.a, LEV_CHARA);
-		renderer->DrawTexturedRect(pos.x, pos.y, pos.z,
-			size * 2, 1.0f, 1.0f, 1.0f, 1.0f,
-			texture[2], LEV_CHARA);
+		//renderer->DrawTexturedRect(pos.x, pos.y, pos.z,
+		//	size * 2, 1.0f, 1.0f, 1.0f, 1.0f,
+		//	texture[2], LEV_CHARA);
+		renderer->DrawTexturedRectSeq(pos.x, pos.y, pos.z,
+			size * 3, 1.0f, 1.0f, 1.0f, 1.0f,
+			characterTexture[0], animationFrame/2, (dir.x < 0), 8, 2, LEV_CHARA);
+
 		renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
 			SIZCHAR * 2, HPBARHEIGHT,
 			teamColor[p->getTeam()].r,
@@ -241,10 +261,14 @@ void SceneMgr::render()
 		pos = p->getPos();
 		size = p->getSize();
 		color = p->getColor();
+		dir = p->getDir();
 
 		renderer->DrawSolidRect(
 			pos.x, pos.y, pos.z, size * 2,
 			color.r, color.g, color.b, color.a, LEV_BULLE);
+		renderer->DrawParticle(pos.x, pos.y, pos.z, SIZPART,
+			1, 1, 1, 1, -dir.x * 4, -dir.y * 4,
+			particleTexture[0], p->getFlowTime());
 	}
 	for (auto p = arrowList.cbegin(); p != arrowList.cend(); ++p)
 	{
@@ -255,7 +279,10 @@ void SceneMgr::render()
 		renderer->DrawSolidRect(
 			pos.x, pos.y, pos.z, size * 2,
 			color.r, color.g, color.b, color.a, LEV_ARROW);
+		
+
 	}
+
 }
 
 void SceneMgr::addObj(int x, int y, int type, int team)

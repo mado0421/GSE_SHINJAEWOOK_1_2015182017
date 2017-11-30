@@ -27,12 +27,17 @@ private:
 
 	GLuint texBuilding[MAX_TEAM];
 	GLuint texture[3];
+	GLuint backTexture[1];
+	GLuint particleTexture[1];
+	GLuint characterTexture[1];
+
 	Color teamColor[2] =
 	{
 		{ 1.0f, 0.0f, 0.0f, 1.0f },
 		{ 0.0f, 0.0f, 1.0f, 1.0f }
 	};
 	float		m_tFlow[NUMOFTIMER];
+	int			animationFrame;
 public:
 	SceneMgr() {}
 	~SceneMgr() { 

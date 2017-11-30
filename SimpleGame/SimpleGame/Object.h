@@ -23,6 +23,8 @@
 #define HPBULL 15
 #define SPDBULL 600.0f
 
+#define SIZPART 5.0f
+
 #define SIZARRO 2.0f
 #define HPARRO 10
 #define SPDARRO 100.0f

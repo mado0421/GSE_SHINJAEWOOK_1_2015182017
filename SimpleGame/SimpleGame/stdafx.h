@@ -12,6 +12,7 @@
 #define WWIDTH 500
 #define WHEIGHT 800
 
+#define LEV_BACK 0.9
 #define LEV_BUILD 0.1
 #define LEV_CHARA 0.2
 #define LEV_BULLE 0.3
