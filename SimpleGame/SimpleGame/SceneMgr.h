@@ -12,7 +12,7 @@ enum Timer {
 	SouthCreateCooldown = 1,
 
 	NorthAutoCreateTime = 5,
-	SouthCreateCooldownTime = 3
+	SouthCreateCooldownTime = 1
 };
 
 class SceneMgr

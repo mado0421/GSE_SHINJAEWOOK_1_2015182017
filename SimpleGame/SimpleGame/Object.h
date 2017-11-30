@@ -16,7 +16,7 @@
 #define HPBUIL 500
 
 #define SIZCHAR 15.0f
-#define HPCHAR 100
+#define HPCHAR 30
 #define SPDCHAR 300.0f
 
 #define SIZBULL 2.0f
