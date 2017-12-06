@@ -13,16 +13,12 @@ void SceneMgr::initialize()
 	m_tFlow[NorthAutoCreate] = NorthAutoCreateTime;
 	m_tFlow[SouthCreateCooldown] = SouthCreateCooldownTime;
 
-	texBuilding[TEAM_1] = renderer->CreatePngTexture("assets/image/햄스터1.png");
-	texBuilding[TEAM_2] = renderer->CreatePngTexture("assets/image/햄스터2.png");
-	texture[0] = renderer->CreatePngTexture("assets/image/햄스터1.png");
-	texture[1] = renderer->CreatePngTexture("assets/image/햄스터2.png");
-	texture[2] = renderer->CreatePngTexture("assets/image/해바라기씨.png");
-	backTexture[0] = renderer->CreatePngTexture("assets/image/배경텍스처.png");
-	particleTexture[0] = renderer->CreatePngTexture("assets/image/파티클텍스처.png");
-
-	/*24*29*/
-	characterTexture[0] = renderer->CreatePngTexture("assets/image/Char_runnig-Sheet.png");
+	texture[Tex::NorthBulid] = renderer->CreatePngTexture("assets/image/햄스터1.png");
+	texture[Tex::SouthBulid] = renderer->CreatePngTexture("assets/image/햄스터2.png");
+	texture[Tex::NorthChara] = renderer->CreatePngTexture("assets/image/Char_runnig-Sheet.png");
+	texture[Tex::SouthChara] = renderer->CreatePngTexture("assets/image/Char_runnig-Sheet.png");
+	texture[Tex::BgImg] = renderer->CreatePngTexture("assets/image/배경텍스처.png");
+	texture[Tex::Particle] = renderer->CreatePngTexture("assets/image/파티클텍스처.png");
 
 	animationFrame = 0;
 
@@ -59,16 +55,49 @@ void SceneMgr::update(float elapsedTime)
 		}
 		if (p->getFlowTime() > p->getActInterval())
 		{
-			p->setFlowTIme(0.0f);
-			bulletList.emplace_back(
-				p->getPosX(), p->getPosY(), p->getTeam(),
-				rand() % 100 / 50.0 - 1.0, rand() % 100 / 50.0 - 1.0
-			);
+			int team = p->getTeam();
+			float dis = RANBUIL;
+			for (auto cp = charList.begin(); cp != charList.end(); ++cp)
+			{
+				if (team != cp->getTeam())
+				{
+					if (dis > getDistance(p->getPos(), cp->getPos()))
+					{
+						dis = getDistance(p->getPos(), cp->getPos());
+						p->setTarget(&(*cp));
+					}
+				}
+			}
+			if (dis == RANBUIL) p->setTarget(nullptr);
+			if (p->getTarget() != nullptr)
+			{
+				p->setFlowTIme(0.0f);
+				bulletList.emplace_back(
+					p->getPosX(), p->getPosY(), p->getTeam(),
+					p->getTarget()->getPosX() - p->getPosX(), p->getTarget()->getPosY() - p->getPosY()
+				);
+			}
 		}
 	}
 	for (auto p = charList.begin(); p != charList.end(); ++p)
 	{
 		p->update(elapsedTime);
+
+		int team = p->getTeam();
+		float dis = SIGHTCHAR;
+		for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
+		{
+			if (team != bp->getTeam())
+			{
+				if (dis > getDistance(p->getPos(), bp->getPos()))
+				{
+					dis = getDistance(p->getPos(), bp->getPos());
+					p->setTarget(&(*bp));
+				}
+			}
+		}
+		if (dis == SIGHTCHAR) p->setTarget(nullptr);
+
 		//화면 밖으로 나가면
 		if (p->isOut())
 		{
@@ -92,14 +121,19 @@ void SceneMgr::update(float elapsedTime)
 		}
 		if (p->getFlowTime() > p->getActInterval())
 		{
-			p->setFlowTIme(0.0f);
-			arrowList.emplace_back(
-				p->getPosX(), p->getPosY(), p->getTeam(),
-				rand() % 100 / 50.0 - 1.0, rand() % 100 / 50.0 - 1.0
-			);
-		}
+			if (p->getTarget() != nullptr)
+			{
+				if (RANCHAR > getDistance(p->getPos(), p->getTarget()->getPos()))
+				{
+					p->setFlowTIme(0.0f);
+					arrowList.emplace_back(
+						p->getPosX(), p->getPosY(), p->getTeam(),
+						p->getTarget()->getPosX() - p->getPosX(), p->getTarget()->getPosY() - p->getPosY()
+					);
+				}
+			}
 
-		int team = p->getTeam();
+		}
 
 		for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
 		{
@@ -213,7 +247,7 @@ void SceneMgr::render()
 
 	renderer->DrawTexturedRect(0, 0, 0,
 		WHEIGHT, 1.0f, 1.0f, 1.0f, 1.0f,
-		backTexture[0], LEV_BACK);
+		texture[Tex::BgImg], LEV_BACK);
 
 	for (auto p = buildList.cbegin(); p != buildList.cend(); ++p)
 	{
@@ -221,7 +255,7 @@ void SceneMgr::render()
 		size = p->getSize();
 		renderer->DrawTexturedRect(pos.x, pos.y, pos.z,
 			size * 2, 1.0f, 1.0f, 1.0f, 1.0f,
-			texBuilding[p->getTeam()], LEV_BUILD);
+			texture[Tex::NorthBulid+p->getTeam()], LEV_BUILD);
 		renderer->DrawSolidRectGauge(pos.x, pos.y + SIZBUIL + HPBARHEIGHT, pos.z,
 			SIZBUIL*2, HPBARHEIGHT,
 			teamColor[p->getTeam()].r,
@@ -246,7 +280,7 @@ void SceneMgr::render()
 		//	texture[2], LEV_CHARA);
 		renderer->DrawTexturedRectSeq(pos.x, pos.y, pos.z,
 			size * 3, 1.0f, 1.0f, 1.0f, 1.0f,
-			characterTexture[0], animationFrame/2, (dir.x < 0), 8, 2, LEV_CHARA);
+			texture[Tex::NorthChara + p->getTeam()], animationFrame/2, (dir.x < 0), 8, 2, LEV_CHARA);
 
 		renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
 			SIZCHAR * 2, HPBARHEIGHT,
@@ -268,7 +302,7 @@ void SceneMgr::render()
 			color.r, color.g, color.b, color.a, LEV_BULLE);
 		renderer->DrawParticle(pos.x, pos.y, pos.z, SIZPART,
 			1, 1, 1, 1, -dir.x * 4, -dir.y * 4,
-			particleTexture[0], p->getFlowTime());
+			texture[Tex::Particle], p->getFlowTime());
 	}
 	for (auto p = arrowList.cbegin(); p != arrowList.cend(); ++p)
 	{
@@ -279,8 +313,6 @@ void SceneMgr::render()
 		renderer->DrawSolidRect(
 			pos.x, pos.y, pos.z, size * 2,
 			color.r, color.g, color.b, color.a, LEV_ARROW);
-		
-
 	}
 
 }
@@ -328,4 +360,10 @@ void SceneMgr::addObj(int x, int y, int type, int team)
 	default:
 		break;
 	}
+}
+
+float SceneMgr::getDistance(const Position& myPos, const Position& tarPos)
+{
+	//std::cout << (myPos.x - tarPos.x)*(myPos.x - tarPos.x) + (myPos.y - tarPos.y)*(myPos.y - tarPos.y) << std::endl;
+	return (myPos.x - tarPos.x)*(myPos.x - tarPos.x) + (myPos.y - tarPos.y)*(myPos.y - tarPos.y);
 }

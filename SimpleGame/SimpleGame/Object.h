@@ -13,21 +13,25 @@
 #define TEAM_2 0x01
 
 #define SIZBUIL 50.0f
-#define HPBUIL 500
-
 #define SIZCHAR 15.0f
-#define HPCHAR 30
-#define SPDCHAR 300.0f
-
 #define SIZBULL 2.0f
-#define HPBULL 15
-#define SPDBULL 600.0f
-
-#define SIZPART 5.0f
-
+#define SIZPART 3.0f
 #define SIZARRO 2.0f
+
+#define HPBUIL 500
+#define HPCHAR 30
+#define HPBULL 15
 #define HPARRO 10
-#define SPDARRO 100.0f
+
+#define SPDCHAR 200.0f
+#define SPDBULL 600.0f
+#define SPDARRO 350.0f
+
+#define RANBUIL 100'000
+#define RANCHAR 100'000
+
+#define SIGHTCHAR 1'000'000
+
 
 class Object
 {
@@ -128,6 +132,8 @@ public:
 
 class Building : public Object
 {
+protected:
+	Object		*m_pTarget = NULL;
 public:
 	Building();
 	Building(
@@ -136,14 +142,19 @@ public:
 			0, 0, 0, 1, 0, HPBUIL,
 			0, 0, 0, team)
 	{
-		m_tInterval = 1.0f;
+		m_tInterval = 0.2f;
 	}
 	~Building();
 public:
 	virtual void	update(float elapsedTime);
+
+	virtual void	setTarget(Object *target);
+	virtual Object* getTarget();
 };
 class Character : public Object
 {
+protected:
+	Object		*m_pTarget = NULL;
 public:
 	Character();
 	Character(float x, float y,
@@ -160,6 +171,9 @@ public:
 	~Character();
 public:
 	virtual void	update(float elapsedTime);
+
+	virtual void	setTarget(Object *target);
+	virtual Object* getTarget();
 
 };
 class Bullet : public Object

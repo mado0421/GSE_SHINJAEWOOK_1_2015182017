@@ -60,6 +60,16 @@ void Building::update(float elapsedTime)
 	m_tFlow += elapsedTime;
 }
 
+void Building::setTarget(Object * target)
+{
+	m_pTarget = target;
+}
+
+Object * Building::getTarget()
+{
+	return m_pTarget;
+}
+
 Character::Character()
 {
 }
@@ -70,13 +80,39 @@ Character::~Character()
 
 void Character::update(float elapsedTime)
 {
-	float spdX = m_dir.x * elapsedTime * m_spd;
-	float spdY = m_dir.y * elapsedTime * m_spd;
+	float spdX, spdY;
+	if (m_pTarget == nullptr)
+	{
+		spdX = m_dir.x * elapsedTime * m_spd;
+		spdY = m_dir.y * elapsedTime * m_spd;
 
-	m_pos.x += spdX;
-	m_pos.y += spdY;
+		m_pos.x += spdX;
+		m_pos.y += spdY;
+	}
+	else
+	{
+		Vector2f pos(
+			m_pTarget->getPosX() - m_pos.x , 
+			m_pTarget->getPosY() - m_pos.y );
+		pos = Vector::Normalize(pos);
+
+		m_pos.x += pos.x * elapsedTime * m_spd;
+		m_pos.y += pos.y * elapsedTime * m_spd;
+		m_dir.x = pos.x;
+	}
+
 
 	m_tFlow += elapsedTime;
+}
+
+void Character::setTarget(Object *target)
+{
+	m_pTarget = target;
+}
+
+Object * Character::getTarget()
+{
+	return m_pTarget;
 }
 
 Bullet::Bullet()

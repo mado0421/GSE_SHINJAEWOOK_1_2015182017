@@ -11,8 +11,19 @@ enum Timer {
 	NorthAutoCreate = 0,
 	SouthCreateCooldown = 1,
 
-	NorthAutoCreateTime = 5,
+	NorthAutoCreateTime = 2,
 	SouthCreateCooldownTime = 1
+};
+
+enum Tex {
+	BgImg=0,
+	Particle,
+	NorthBulid,
+	SouthBulid,
+	NorthChara,
+	SouthChara,
+
+	NumOfTex
 };
 
 class SceneMgr
@@ -25,11 +36,7 @@ private:
 
 	Renderer *renderer = NULL;
 
-	GLuint texBuilding[MAX_TEAM];
-	GLuint texture[3];
-	GLuint backTexture[1];
-	GLuint particleTexture[1];
-	GLuint characterTexture[1];
+	GLuint texture[Tex::NumOfTex];
 
 	Color teamColor[2] =
 	{
@@ -52,4 +59,9 @@ public:
 	void render();
 
 	void addObj(int x, int y, int type, int team);
+	/*거리 비교해서 특정 오브젝트 찾기
+	인자:내 위치, 상대 위치
+	반환 값: 거리
+	*/
+	float getDistance(const Position& myPos, const Position& tarPos);
 };
