@@ -28,6 +28,13 @@ void SceneMgr::initialize()
 	addObj(1 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
 	addObj(2 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
 	addObj(3 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
+
+	m_pSound = new Sound();
+	m_soundIdx[Snd::bg] = m_pSound->CreateSound("./Dependencies/SoundSamples/ophelia.mp3");
+	m_soundIdx[Snd::fire] = m_pSound->CreateSound("./assets/sound/gun_fire.wav");
+	m_soundIdx[Snd::destroy] = m_pSound->CreateSound("./Dependencies/SoundSamples/ophelia.mp3");
+
+	m_pSound->PlaySoundW(m_soundIdx[Snd::bg], true, 0.2f);
 }
 
 void SceneMgr::update(float elapsedTime)
@@ -76,6 +83,8 @@ void SceneMgr::update(float elapsedTime)
 					p->getPosX(), p->getPosY(), p->getTeam(),
 					p->getTarget()->getPosX() - p->getPosX(), p->getTarget()->getPosY() - p->getPosY()
 				);
+				m_pSound->PlaySoundW(m_soundIdx[Snd::fire], false, 0.2f);
+
 			}
 		}
 	}
@@ -314,6 +323,8 @@ void SceneMgr::render()
 			pos.x, pos.y, pos.z, size * 2,
 			color.r, color.g, color.b, color.a, LEV_ARROW);
 	}
+
+	renderer->DrawTextW(0, 0, GLUT_BITMAP_9_BY_15, 1.0f, 1.0f, 1.0f, "abc");
 
 }
 

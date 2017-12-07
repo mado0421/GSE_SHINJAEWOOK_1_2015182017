@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Object.h"
 #include "Renderer.h"
+#include "Sound.h"
 
 #define MAX_TEAM 2
 
@@ -26,6 +27,14 @@ enum Tex {
 	NumOfTex
 };
 
+enum Snd {
+	bg=0,
+	fire,
+	destroy,
+
+	NumOfSnd
+};
+
 class SceneMgr
 {
 private:
@@ -43,12 +52,17 @@ private:
 		{ 1.0f, 0.0f, 0.0f, 1.0f },
 		{ 0.0f, 0.0f, 1.0f, 1.0f }
 	};
+
+	Sound *m_pSound = NULL;
+	int m_soundIdx[NumOfSnd];
+
 	float		m_tFlow[NUMOFTIMER];
 	int			animationFrame;
 public:
 	SceneMgr() {}
 	~SceneMgr() { 
 		delete renderer;
+		delete m_pSound;
 	}
 
 	/*초기화 함수*/
