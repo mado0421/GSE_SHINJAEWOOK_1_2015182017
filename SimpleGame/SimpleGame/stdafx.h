@@ -26,8 +26,11 @@
 #define LEV_BACK 0.9
 #define LEV_BUILD 0.1
 #define LEV_CHARA 0.2
+#define LEV_FLYCHARA 0.25
 #define LEV_BULLE 0.3
 #define LEV_ARROW 0.3	
+
+#define DEBUG
 
 struct Vector3f {
 	float x, y, z;
@@ -65,6 +68,12 @@ struct Vector2f {
 
 	}
 };
+
+inline float getDistance(const Position& myPos, const Position& tarPos)
+{
+	return (myPos.x - tarPos.x)*(myPos.x - tarPos.x) + (myPos.y - tarPos.y)*(myPos.y - tarPos.y);
+}
+
 
 namespace Vector {
 	inline float Length(Vector2f vec2f)

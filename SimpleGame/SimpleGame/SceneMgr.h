@@ -73,9 +73,9 @@ public:
 	void render();
 
 	void addObj(int x, int y, int type, int team);
+	void addObj(int x, int y, int type, int team, int kind);
 	/*거리 비교해서 특정 오브젝트 찾기
 	인자:내 위치, 상대 위치
 	반환 값: 거리
 	*/
-	float getDistance(const Position& myPos, const Position& tarPos);
 };

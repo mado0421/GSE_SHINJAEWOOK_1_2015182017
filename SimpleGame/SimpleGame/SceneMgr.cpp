@@ -22,17 +22,17 @@ void SceneMgr::initialize()
 
 	animationFrame = 0;
 
-	addObj(1 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
-	addObj(2 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
-	addObj(3 * (WWIDTH / 4.0), WHEIGHT / 4.0, OBJECT_BUILDING, TEAM_1);
-	addObj(1 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
-	addObj(2 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
-	addObj(3 * (WWIDTH / 4.0), 3 * (WHEIGHT / 4.0), OBJECT_BUILDING, TEAM_2);
+	addObj(1 * (WWIDTH / 4.0), 1.5 * (WHEIGHT / 8.0), OBJECT_BUILDING, TEAM_1);
+	addObj(2 * (WWIDTH / 4.0), 1 * (WHEIGHT / 8.0), OBJECT_BUILDING, TEAM_1);
+	addObj(3 * (WWIDTH / 4.0), 1.5 * (WHEIGHT / 8.0), OBJECT_BUILDING, TEAM_1);
+	addObj(1 * (WWIDTH / 4.0), 6.5 * (WHEIGHT / 8.0), OBJECT_BUILDING, TEAM_2);
+	addObj(2 * (WWIDTH / 4.0), 7 * (WHEIGHT / 8.0), OBJECT_BUILDING, TEAM_2);
+	addObj(3 * (WWIDTH / 4.0), 6.5 * (WHEIGHT / 8.0), OBJECT_BUILDING, TEAM_2);
 
 	m_pSound = new Sound();
-	m_soundIdx[Snd::bg] = m_pSound->CreateSound("./Dependencies/SoundSamples/ophelia.mp3");
+	m_soundIdx[Snd::bg] = m_pSound->CreateSound("./assets/sound/ophelia.mp3");
 	m_soundIdx[Snd::fire] = m_pSound->CreateSound("./assets/sound/gun_fire.wav");
-	m_soundIdx[Snd::destroy] = m_pSound->CreateSound("./Dependencies/SoundSamples/ophelia.mp3");
+	//m_soundIdx[Snd::destroy] = m_pSound->CreateSound("./assets/sound/ophelia.mp3");
 
 	m_pSound->PlaySoundW(m_soundIdx[Snd::bg], true, 0.2f);
 }
@@ -47,7 +47,7 @@ void SceneMgr::update(float elapsedTime)
 	if (m_tFlow[Timer::NorthAutoCreate] >= Timer::NorthAutoCreateTime)
 	{
 		m_tFlow[Timer::NorthAutoCreate] = 0;
-		addObj(1 * (WWIDTH / 4.0), rand() % (WHEIGHT / 2), OBJECT_CHARACTER, TEAM_1);
+		addObj((rand() % WWIDTH), rand() % (WHEIGHT / 2), OBJECT_CHARACTER, TEAM_1, rand()%char_kind::num_char_kind);
 
 	}
 
@@ -90,22 +90,11 @@ void SceneMgr::update(float elapsedTime)
 	}
 	for (auto p = charList.begin(); p != charList.end(); ++p)
 	{
-		p->update(elapsedTime);
+
 
 		int team = p->getTeam();
+		int char_kind = p->getKind();
 		float dis = SIGHTCHAR;
-		for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
-		{
-			if (team != bp->getTeam())
-			{
-				if (dis > getDistance(p->getPos(), bp->getPos()))
-				{
-					dis = getDistance(p->getPos(), bp->getPos());
-					p->setTarget(&(*bp));
-				}
-			}
-		}
-		if (dis == SIGHTCHAR) p->setTarget(nullptr);
 
 		//화면 밖으로 나가면
 		if (p->isOut())
@@ -128,42 +117,90 @@ void SceneMgr::update(float elapsedTime)
 			if (p == charList.end()) break;
 			continue;
 		}
+
+		if (char_kind == char_kind::GroundBuild)
+		{
+			for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
+			{
+				if (team != bp->getTeam())
+				{
+					if (dis > getDistance(p->getPos(), bp->getPos()))
+					{
+						dis = getDistance(p->getPos(), bp->getPos());
+						p->setTarget(&(*bp));
+					}
+				}
+			}
+		}
+		else if (char_kind == char_kind::GroundAll || char_kind == char_kind::AirAll)
+		{
+			for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
+			{
+				if (team != bp->getTeam())
+				{
+					if (dis > getDistance(p->getPos(), bp->getPos()))
+					{
+						dis = getDistance(p->getPos(), bp->getPos());
+						p->setTarget(&(*bp));
+					}
+				}
+			}
+			for (auto cp = charList.begin(); cp != charList.end(); ++cp)
+			{
+				if (team != cp->getTeam())
+				{
+					if (dis > getDistance(p->getPos(), cp->getPos()))
+					{
+						dis = getDistance(p->getPos(), cp->getPos());
+						p->setTarget(&(*cp));
+					}
+				}
+			}
+		}
+
+		if (dis == SIGHTCHAR) p->setTarget(nullptr);
+
+
+
 		if (p->getFlowTime() > p->getActInterval())
 		{
 			if (p->getTarget() != nullptr)
 			{
-				if (RANCHAR > getDistance(p->getPos(), p->getTarget()->getPos()))
+				
+				if (p->getRange() > getDistance(p->getPos(), p->getTarget()->getPos()))
 				{
 					p->setFlowTIme(0.0f);
 					arrowList.emplace_back(
 						p->getPosX(), p->getPosY(), p->getTeam(),
 						p->getTarget()->getPosX() - p->getPosX(), p->getTarget()->getPosY() - p->getPosY()
 					);
-				}
-			}
-
-		}
-
-		for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
-		{
-			if (team != bp->getTeam())
-			{
-				if (p->isCollide(*bp))
-				{
-					bp->addHp(-1 * p->getHp());
-					std::cout << bp->getTeam() << "팀의 건물이 " << p->getHp()
-						<< "데미지를 입었습니다." << std::endl;
-					p = charList.erase(p);
-					if (p == charList.end()) goto CHARRETURN;
+					m_pSound->PlaySoundW(m_soundIdx[Snd::fire], false, 0.2f);
 				}
 			}
 		}
+
+		//for (auto bp = buildList.begin(); bp != buildList.end(); ++bp)
+		//{
+		//	if (team != bp->getTeam())
+		//	{
+		//		if (p->isCollide(*bp))
+		//		{
+		//			bp->addHp(-1 * p->getHp());
+		//			std::cout << bp->getTeam() << "팀의 건물이 " << p->getHp()
+		//				<< "데미지를 입었습니다." << std::endl;
+		//			p = charList.erase(p);
+		//			if (p == charList.end()) goto CHARRETURN;
+		//		}
+		//	}
+		//}
+
+		p->update(elapsedTime);
 	}
 CHARRETURN:
 	for (auto p = bulletList.begin(); p != bulletList.end(); ++p)
 	{
 		p->update(elapsedTime);
-		if (p->isHpZero() || p->isOut())
+		if (p->isHpZero() || p->isOut() || p->isTimeOut())
 		{
 			p = bulletList.erase(p);
 			if (p == bulletList.end()) break;
@@ -178,8 +215,6 @@ CHARRETURN:
 				if (p->isCollide(*bp))
 				{
 					bp->addHp(-1 * p->getHp());
-					std::cout << bp->getTeam() << "팀의 건물이 " << p->getHp()
-						<< "데미지를 입었습니다." << std::endl;
 					p = bulletList.erase(p);
 					if (p == bulletList.end()) goto BULLETRETURN;
 				}
@@ -192,8 +227,6 @@ CHARRETURN:
 				if (p->isCollide(*cp))
 				{
 					cp->addHp(-1 * p->getHp());
-					std::cout << cp->getTeam() << "팀의 캐릭터가 " << p->getHp()
-						<< "데미지를 입었습니다." << std::endl;
 					p = bulletList.erase(p);
 					if (p == bulletList.end()) goto BULLETRETURN;
 				}
@@ -220,8 +253,6 @@ BULLETRETURN:
 				if (p->isCollide(*bp))
 				{
 					bp->addHp(-1 * p->getHp());
-					std::cout << bp->getTeam() << "팀의 건물이 " << p->getHp()
-						<< "데미지를 입었습니다." << std::endl;
 					p = arrowList.erase(p);
 					if (p == arrowList.end()) goto ARROWRETURN;
 				}
@@ -234,8 +265,6 @@ BULLETRETURN:
 				if (p->isCollide(*cp))
 				{
 					cp->addHp(-1 * p->getHp());
-					std::cout << cp->getTeam() << "팀의 캐릭터가 " << p->getHp()
-						<< "데미지를 입었습니다." << std::endl;
 					p = arrowList.erase(p);
 					if (p == arrowList.end()) goto ARROWRETURN;
 				}
@@ -251,6 +280,7 @@ void SceneMgr::render()
 {
 	Position	pos;
 	float		size;
+	int			kind;
 	Color		color;
 	Vector2f	dir;
 
@@ -280,6 +310,7 @@ void SceneMgr::render()
 		size = p->getSize();
 		color = p->getColor();
 		dir = p->getDir();
+		kind = p->getKind();
 
 		//renderer->DrawSolidRect(
 		//	pos.x, pos.y, pos.z, size * 2,
@@ -291,13 +322,42 @@ void SceneMgr::render()
 			size * 3, 1.0f, 1.0f, 1.0f, 1.0f,
 			texture[Tex::NorthChara + p->getTeam()], animationFrame/2, (dir.x < 0), 8, 2, LEV_CHARA);
 
-		renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
-			SIZCHAR * 2, HPBARHEIGHT,
-			teamColor[p->getTeam()].r,
-			teamColor[p->getTeam()].g,
-			teamColor[p->getTeam()].b,
-			teamColor[p->getTeam()].a,
-			((float)p->getHp() / HPCHAR), 0);
+		switch (p->getKind())
+		{
+		case char_kind::GroundAll:
+			renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
+				size * 2, HPBARHEIGHT,
+				teamColor[p->getTeam()].r,
+				teamColor[p->getTeam()].g,
+				teamColor[p->getTeam()].b,
+				teamColor[p->getTeam()].a,
+				((float)p->getHp() / HPCHAR), 0);
+			break;
+
+		case char_kind::GroundBuild:
+			renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
+				size * 2, HPBARHEIGHT,
+				teamColor[p->getTeam()].r,
+				teamColor[p->getTeam()].g,
+				teamColor[p->getTeam()].b,
+				teamColor[p->getTeam()].a,
+				((float)p->getHp() / HPGIAN), 0);
+			break;
+
+		case char_kind::AirAll:
+			renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
+				size * 2, HPBARHEIGHT,
+				teamColor[p->getTeam()].r,
+				teamColor[p->getTeam()].g,
+				teamColor[p->getTeam()].b,
+				teamColor[p->getTeam()].a,
+				((float)p->getHp() / HPFLY), 0);
+			break;
+		default:
+			break;
+		}
+
+
 	}
 	for (auto p = bulletList.cbegin(); p != bulletList.cend(); ++p)
 	{
@@ -324,8 +384,13 @@ void SceneMgr::render()
 			color.r, color.g, color.b, color.a, LEV_ARROW);
 	}
 
-	renderer->DrawTextW(0, 0, GLUT_BITMAP_9_BY_15, 1.0f, 1.0f, 1.0f, "abc");
-
+#ifdef DEBUG
+	renderer->DrawTextW(0, 0, GLUT_BITMAP_9_BY_15, 1.0f, 1.0f, 1.0f, "(0, 0)   ");
+	renderer->DrawTextW(WWIDTH*0.5, WHEIGHT*0.5, GLUT_BITMAP_9_BY_15, 1.0f, 1.0f, 1.0f, "(0.5,0.5)");
+	renderer->DrawTextW(-WWIDTH*0.5, WHEIGHT*0.5, GLUT_BITMAP_9_BY_15, 1.0f, 1.0f, 1.0f, "(-0.5,0.5)");
+	renderer->DrawTextW(-WWIDTH*0.5, -WHEIGHT*0.5, GLUT_BITMAP_9_BY_15, 1.0f, 1.0f, 1.0f, "(-0.5,-0.5)");
+	renderer->DrawTextW(WWIDTH*0.5, -WHEIGHT*0.5, GLUT_BITMAP_9_BY_15, 1.0f, 1.0f, 1.0f, "(0.5,-0.5)");
+#endif
 }
 
 void SceneMgr::addObj(int x, int y, int type, int team)
@@ -373,8 +438,50 @@ void SceneMgr::addObj(int x, int y, int type, int team)
 	}
 }
 
-float SceneMgr::getDistance(const Position& myPos, const Position& tarPos)
+void SceneMgr::addObj(int x, int y, int type, int team, int char_kind)
 {
-	//std::cout << (myPos.x - tarPos.x)*(myPos.x - tarPos.x) + (myPos.y - tarPos.y)*(myPos.y - tarPos.y) << std::endl;
-	return (myPos.x - tarPos.x)*(myPos.x - tarPos.x) + (myPos.y - tarPos.y)*(myPos.y - tarPos.y);
+	switch (type)
+	{
+	case OBJECT_BUILDING:
+		buildList.emplace_back(
+			x - WWIDTH / 2.0, -y + WHEIGHT / 2.0, team);
+		break;
+	case OBJECT_CHARACTER:
+		if (team == TEAM_2)
+		{
+			if (y >= 400.0 && m_tFlow[Timer::SouthCreateCooldown] >= Timer::SouthCreateCooldownTime)
+			{
+				m_tFlow[Timer::SouthCreateCooldown] = 0;
+				charList.emplace_back(
+					x - WWIDTH / 2.0, -y + WHEIGHT / 2.0, team,
+					rand() % 100 / 50.0 - 1.0, rand() % 100 / 50.0 - 1.0,
+					char_kind
+				);
+			}
+		}
+		else
+		{
+			charList.emplace_back(
+				x - WWIDTH / 2.0, -y + WHEIGHT / 2.0, team,
+				rand() % 100 / 50.0 - 1.0, rand() % 100 / 50.0 - 1.0,
+				char_kind
+			);
+		}
+		break;
+	case OBJECT_BULLET:
+		bulletList.emplace_back(
+			x - WWIDTH / 2.0, -y + WHEIGHT / 2.0, team,
+			rand() % 100 / 50.0 - 1.0, rand() % 100 / 50.0 - 1.0
+		);
+		break;
+	case OBJECT_ARROW:
+		arrowList.emplace_back(
+			x - WWIDTH / 2.0, -y + WHEIGHT / 2.0, team,
+			rand() % 100 / 50.0 - 1.0, rand() % 100 / 50.0 - 1.0
+		);
+		break;
+	default:
+		break;
+	}
 }
+

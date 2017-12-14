@@ -91,14 +91,17 @@ void Character::update(float elapsedTime)
 	}
 	else
 	{
-		Vector2f pos(
-			m_pTarget->getPosX() - m_pos.x , 
-			m_pTarget->getPosY() - m_pos.y );
-		pos = Vector::Normalize(pos);
+		if (getDistance(m_pos, m_pTarget->getPos()) > m_range)
+		{
+			Vector2f pos(
+				m_pTarget->getPosX() - m_pos.x,
+				m_pTarget->getPosY() - m_pos.y);
+			pos = Vector::Normalize(pos);
 
-		m_pos.x += pos.x * elapsedTime * m_spd;
-		m_pos.y += pos.y * elapsedTime * m_spd;
-		m_dir.x = pos.x;
+			m_pos.x += pos.x * elapsedTime * m_spd;
+			m_pos.y += pos.y * elapsedTime * m_spd;
+			m_dir.x = pos.x;
+		}
 	}
 
 

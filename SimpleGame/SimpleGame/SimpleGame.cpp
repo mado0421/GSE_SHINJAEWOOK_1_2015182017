@@ -16,6 +16,9 @@ but WITHOUT ANY WARRANTY.
 
 SceneMgr	*sceneMgr = NULL;
 bool		mouseLeftDowned;
+bool		mouseRightDowned;
+bool		mouseMiddleDowned;
+
 DWORD		prevTime;
 DWORD		curTime;
 float		elapsedTime;
@@ -60,17 +63,37 @@ void MouseInput(int button, int state, int x, int y)
 	{
 		mouseLeftDowned = true;
 	}
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+	{
+		mouseRightDowned = true;
+	}
+	if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
+	{
+		mouseMiddleDowned = true;
+	}
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
 	{
 		if (mouseLeftDowned)
 		{
-			sceneMgr->addObj(x, y, OBJECT_CHARACTER, TEAM_2);
+			sceneMgr->addObj(x, y, OBJECT_CHARACTER, TEAM_2, char_kind::GroundAll);
 			mouseLeftDowned = false;
 		}
 	}
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
 	{
-		/*for Test*/
+		if (mouseRightDowned)
+		{
+			sceneMgr->addObj(x, y, OBJECT_CHARACTER, TEAM_2, char_kind::GroundBuild);
+			mouseRightDowned = false;
+		}
+	}
+	if (button == GLUT_MIDDLE_BUTTON && state == GLUT_UP)
+	{
+		if (mouseMiddleDowned)
+		{
+			sceneMgr->addObj(x, y, OBJECT_CHARACTER, TEAM_2, char_kind::AirAll);
+			mouseMiddleDowned = false;
+		}
 	}
 	RenderScene();
 }
