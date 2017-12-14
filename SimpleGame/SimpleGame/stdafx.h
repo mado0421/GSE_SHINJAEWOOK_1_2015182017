@@ -29,6 +29,7 @@
 #define LEV_FLYCHARA 0.25
 #define LEV_BULLE 0.3
 #define LEV_ARROW 0.3	
+#define LEV_CLIMATE 0.01
 
 #define DEBUG
 

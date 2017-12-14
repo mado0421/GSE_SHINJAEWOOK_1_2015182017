@@ -369,9 +369,9 @@ void SceneMgr::render()
 		renderer->DrawSolidRect(
 			pos.x, pos.y, pos.z, size * 2,
 			color.r, color.g, color.b, color.a, LEV_BULLE);
-		renderer->DrawParticle(pos.x, pos.y, pos.z, SIZPART,
+		renderer->DrawParticle(pos.x, pos.y, pos.z, SIZPART*3,
 			1, 1, 1, 1, -dir.x * 4, -dir.y * 4,
-			texture[Tex::Particle], p->getFlowTime());
+			texture[Tex::Particle], p->getFlowTime(), LEV_BULLE+0.01);
 	}
 	for (auto p = arrowList.cbegin(); p != arrowList.cend(); ++p)
 	{
@@ -383,6 +383,11 @@ void SceneMgr::render()
 			pos.x, pos.y, pos.z, size * 2,
 			color.r, color.g, color.b, color.a, LEV_ARROW);
 	}
+
+	renderer->DrawParticleClimate(0, 0, 0, 1,
+		1.0f, 1.0f, 1.0f, 1.0f, -1, -1, 
+		texture[Tex::Particle], m_tFlow[Timer::SceneFlowTime], 
+		LEV_CLIMATE);
 
 #ifdef DEBUG
 	renderer->DrawTextW(0, 0, GLUT_BITMAP_9_BY_15, 1.0f, 1.0f, 1.0f, "(0, 0)   ");

@@ -5,15 +5,17 @@
 
 #define MAX_TEAM 2
 
-#define NUMOFTIMER 2
+#define NUMOFTIMER 3
 #define HPBARHEIGHT 5.0f
 
 enum Timer {
 	NorthAutoCreate = 0,
-	SouthCreateCooldown = 1,
+	SouthCreateCooldown,
+	SceneFlowTime,
 
 	NorthAutoCreateTime = 2,
-	SouthCreateCooldownTime = 1
+	SouthCreateCooldownTime = 1,
+
 };
 
 enum Tex {
@@ -53,8 +55,8 @@ private:
 		{ 0.0f, 0.0f, 1.0f, 1.0f }
 	};
 
-	Sound *m_pSound = NULL;
-	int m_soundIdx[NumOfSnd];
+	Sound		*m_pSound = NULL;
+	int			m_soundIdx[NumOfSnd];
 
 	float		m_tFlow[NUMOFTIMER];
 	int			animationFrame;
