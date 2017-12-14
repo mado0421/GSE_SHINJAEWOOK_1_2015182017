@@ -19,6 +19,7 @@ void SceneMgr::initialize()
 	texture[Tex::SouthChara] = renderer->CreatePngTexture("assets/image/Char_runnig-Sheet.png");
 	texture[Tex::BgImg] = renderer->CreatePngTexture("assets/image/배경텍스처.png");
 	texture[Tex::Particle] = renderer->CreatePngTexture("assets/image/파티클텍스처.png");
+	texture[Tex::FLYChar] = renderer->CreatePngTexture("assets/image/해바라기씨.png");
 
 	animationFrame = 0;
 
@@ -318,13 +319,17 @@ void SceneMgr::render()
 		//renderer->DrawTexturedRect(pos.x, pos.y, pos.z,
 		//	size * 2, 1.0f, 1.0f, 1.0f, 1.0f,
 		//	texture[2], LEV_CHARA);
-		renderer->DrawTexturedRectSeq(pos.x, pos.y, pos.z,
-			size * 3, 1.0f, 1.0f, 1.0f, 1.0f,
-			texture[Tex::NorthChara + p->getTeam()], animationFrame/2, (dir.x < 0), 8, 2, LEV_CHARA);
+		//renderer->DrawTexturedRectSeq(pos.x, pos.y, pos.z,
+		//	size * 3, 1.0f, 1.0f, 1.0f, 1.0f,
+		//	texture[Tex::NorthChara + p->getTeam()], animationFrame/2, (dir.x < 0), 8, 2, LEV_CHARA);
 
 		switch (p->getKind())
 		{
 		case char_kind::GroundAll:
+			renderer->DrawTexturedRectSeq(pos.x, pos.y, pos.z,
+				size * 3, 1.0f, 1.0f, 1.0f, 1.0f,
+				texture[Tex::NorthChara + p->getTeam()], animationFrame / 2, (dir.x < 0), 8, 2, LEV_CHARA);
+
 			renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
 				size * 2, HPBARHEIGHT,
 				teamColor[p->getTeam()].r,
@@ -335,6 +340,10 @@ void SceneMgr::render()
 			break;
 
 		case char_kind::GroundBuild:
+			renderer->DrawTexturedRectSeq(pos.x, pos.y, pos.z,
+				size * 3, 1.0f, 1.0f, 1.0f, 1.0f,
+				texture[Tex::NorthChara + p->getTeam()], animationFrame / 2, (dir.x < 0), 8, 2, LEV_CHARA);
+
 			renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
 				size * 2, HPBARHEIGHT,
 				teamColor[p->getTeam()].r,
@@ -345,6 +354,10 @@ void SceneMgr::render()
 			break;
 
 		case char_kind::AirAll:
+			renderer->DrawTexturedRect(pos.x, pos.y, pos.z,
+				size * 3, 1.0f, 1.0f, 1.0f, 1.0f,
+				texture[Tex::FLYChar], LEV_CHARA);
+
 			renderer->DrawSolidRectGauge(pos.x, pos.y + SIZCHAR + HPBARHEIGHT, pos.z,
 				size * 2, HPBARHEIGHT,
 				teamColor[p->getTeam()].r,

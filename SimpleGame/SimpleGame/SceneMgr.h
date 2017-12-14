@@ -13,7 +13,7 @@ enum Timer {
 	SouthCreateCooldown,
 	SceneFlowTime,
 
-	NorthAutoCreateTime = 2,
+	NorthAutoCreateTime = 1,
 	SouthCreateCooldownTime = 1,
 
 };
@@ -25,6 +25,7 @@ enum Tex {
 	SouthBulid,
 	NorthChara,
 	SouthChara,
+	FLYChar,
 
 	NumOfTex
 };
