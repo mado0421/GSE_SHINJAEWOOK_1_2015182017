@@ -989,7 +989,7 @@ void Renderer::DrawTexturedRectSeqXY(float x, float y, float z, float width, flo
 	glDisableVertexAttribArray(attribTexPosition);
 }
 
-void Renderer::DrawParticle(float x, float y, float z, float size, float r, float g, float b, float a, float gDirX, float gDirY, GLuint texID, float timeInSeconds, float level)
+void Renderer::DrawParticle(float x, float y, float z, float size, float r, float g, float b, float a, float gDirX, float gDirY, GLuint texID, float timeInSeconds, float level, int numOfParticle)
 {
 	GLuint tID = m_textureList[texID];
 
@@ -1040,7 +1040,9 @@ void Renderer::DrawParticle(float x, float y, float z, float size, float r, floa
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tID);
 
-	glDrawArrays(GL_TRIANGLES, 0, m_ParticleVertexCount);
+	if (numOfParticle && numOfParticle < m_ParticleVertexCount)
+		glDrawArrays(GL_TRIANGLES, 0, numOfParticle*6);
+	else glDrawArrays(GL_TRIANGLES, 0, m_ParticleVertexCount*6);
 
 	glDisableVertexAttribArray(attribPosition);
 	glDisableVertexAttribArray(attribTexPos);
@@ -1049,7 +1051,7 @@ void Renderer::DrawParticle(float x, float y, float z, float size, float r, floa
 	glDepthMask(GL_TRUE);
 }
 
-void Renderer::DrawParticleClimate(float x, float y, float z, float size, float r, float g, float b, float a, float gDirX, float gDirY, GLuint texID, float timeInSeconds, float level)
+void Renderer::DrawParticleClimate(float x, float y, float z, float size, float r, float g, float b, float a, float gDirX, float gDirY, GLuint texID, float timeInSeconds, float level, int numOfParticle)
 {
 	GLuint tID = m_textureList[texID];
 
@@ -1100,7 +1102,9 @@ void Renderer::DrawParticleClimate(float x, float y, float z, float size, float 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tID);
 
-	glDrawArrays(GL_TRIANGLES, 0, m_ParticleCloudVertexCount);
+	if (numOfParticle && numOfParticle < m_ParticleCloudCount)
+		glDrawArrays(GL_TRIANGLES, 0, numOfParticle * 6);
+	else glDrawArrays(GL_TRIANGLES, 0, m_ParticleCloudCount * 6);
 
 	glDisableVertexAttribArray(attribPosition);
 	glDisableVertexAttribArray(attribTexPos);
